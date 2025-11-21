@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,8 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () { return view('index'); })->name('main');
-Route::get('/properties/{id}', function() { return view('property.detail'); })->name('property.detail');
-Route::get('/properties', function() { return view('property.list'); })->name('property.list');
-Route::get('/login', function() { return view('login'); })->name('login');
-Route::get('/register', function() { return view('login'); })->name('register');
+Route::get('/', [PropertyController::class, 'home'])->name('main');
+
+Route::resource('properties', PropertyController::class);
+
+Route::get('/login', [UserController::class, 'loginView'])->name('login');
+Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+Route::get('/register', [UserController::class, 'loginView'])->name('register');
+
+Route::post('/login', [UserController::class, 'login'])->name('auth.login');

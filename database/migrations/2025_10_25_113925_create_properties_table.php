@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('price', 15, 2); // lebih aman untuk nominal besar
             $table->string('address');
+            $table->string('city');
             $table->string('thumbnail');
             $table->text('description');
             $table->float('land_area')->nullable();
@@ -30,6 +31,8 @@ return new class extends Migration
             $table->integer('bathrooms')->nullable();
             $table->integer('floors')->nullable();
             $table->string('maps_url');
+            $table->boolean('featured');
+            $table->boolean('popular');
             $table->enum('status', [0, 1]);
 
             $table->foreignId('owner_id')

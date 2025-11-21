@@ -20,11 +20,14 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->text('bio');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('profile_img');
             $table->string('wa_url')->nullable();
             $table->string('ig_url')->nullable();
             $table->string('tele_url')->nullable();
+            $table->string('x_url');
             $table->timestamp('email_verified_at')->nullable();
 
 

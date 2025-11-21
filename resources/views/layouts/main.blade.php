@@ -53,12 +53,26 @@
                         <li class="{{ Route::is('main') ? 'active' : '' }}">
                             <a href="{{ route('main') }}">Home</a>
                         </li>
-                        <li class="{{ Route::is('property.list') ? 'active' : '' }}">
-                            <a href="{{ route('property.list') }}">Properties</a>
+                        <li class="{{ Route::is('properties.index') ? 'active' : '' }}">
+                            <a href="{{ route('properties.index') }}">Properties</a>
                         </li>
-                        <li class="{{ Route::is('login') ? 'active' : '' }}">
-                            <a href="{{ route('login') }}">Login</a>
-                        </li>
+
+                        @if (!Auth::check())
+                            <li class="{{ Route::is('login') ? 'active' : '' }}">
+                                <a href="{{ route('login') }}">Login</a>
+                            </li>
+                        @else
+                            <li>
+                                <a href="#" class=""
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Logout
+                                </a>
+
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </li>
+                        @endif
                     </ul>
 
                     <a href="#"

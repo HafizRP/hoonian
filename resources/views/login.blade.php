@@ -19,20 +19,47 @@
     <style>
         body {
             font-family: 'Work Sans', sans-serif;
-            background: linear-gradient(135deg, #004aad 0%, #00b4d8 100%);
             height: 100vh;
+            margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
+            position: relative;
         }
 
+        /* --- Bootstrap Carousel Background --- */
+        .carousel,
+        .carousel-inner,
+        .carousel-item,
+        .carousel-item img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .carousel::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            /* background: rgba(0, 74, 173, 0.55); */
+            z-index: 1;
+        }
+
+        /* --- Login Card --- */
         .login-card {
             background: #fff;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             padding: 40px;
             width: 100%;
             max-width: 420px;
+            position: relative;
+            z-index: 2;
             animation: fadeInUp 0.6s ease forwards;
         }
 
@@ -71,6 +98,12 @@
             border-radius: 10px;
             font-weight: 600;
             padding: 12px;
+            background-color: #004aad;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #003580;
         }
 
         .login-footer {
@@ -89,7 +122,7 @@
             text-decoration: underline;
         }
 
-        /* Tambahan Google button */
+        /* Tombol Google */
         .google-btn {
             display: flex;
             align-items: center;
@@ -136,14 +169,42 @@
 </head>
 
 <body>
-    <div class="login-card" data-aos="fade-up">
+
+    <!-- Bootstrap Carousel Background -->
+    <div id="bgCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4000">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{{ asset('assets/images/hero_bg_1.jpg') }}" alt="bg1">
+            </div>
+            <div class="carousel-item">
+                <img src="{{ asset('assets/images/hero_bg_2.jpg') }}" alt="bg2">
+            </div>
+            <div class="carousel-item">
+                <img src="{{ asset('assets/images/hero_bg_3.jpg') }}" alt="bg3">
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
+
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <h2>Welcome Back</h2>
         <p>Masuk ke akun Hoonian kamu</p>
 
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="{{ route('auth.login') }}">
             @csrf
             <div class="mb-3">
-                <input type="email" name="email" class="form-control" placeholder="Email" required />
+                <input type="email" name="email" class="form-control" placeholder="Email" value="{{ old('email') }}" required />
             </div>
 
             <div class="mb-3">
@@ -153,11 +214,10 @@
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
 
-        <!-- Divider -->
         <div class="divider"><span>atau</span></div>
 
         <!-- Tombol Google -->
-        <a href="{{ route('register') }}" class="google-btn">
+        <a href="{{ route('auth.login') }}" class="google-btn">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
             Login dengan Google
         </a>
@@ -170,11 +230,6 @@
     </div>
 
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/js/tiny-slider.js') }}"></script>
-    <script src="{{ asset('assets/js/aos.js') }}"></script>
-    <script src="{{ asset('assets/js/navbar.js') }}"></script>
-    <script src="{{ asset('assets/js/counter.js') }}"></script>
-    <script src="{{ asset('assets/js/custom.js') }}"></script>
 </body>
 
 </html>

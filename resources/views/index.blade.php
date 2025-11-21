@@ -14,9 +14,9 @@
                     <h1 class="heading" data-aos="fade-up">
                         Easiest way to find your dream home
                     </h1>
-                    <form action="#" class="narrow-w form-search d-flex align-items-stretch mb-3" data-aos="fade-up"
+                    <form action="{{ route('properties.index') }}" class="narrow-w form-search d-flex align-items-stretch mb-3" data-aos="fade-up"
                         data-aos-delay="200">
-                        <input type="text" class="form-control px-4"
+                        <input type="text" name='name' class="form-control px-4"
                             placeholder="Your ZIP code or City. e.g. New York" />
                         <button type="submit" class="btn btn-primary">Search</button>
                     </form>
@@ -35,7 +35,8 @@
                 </div>
                 <div class="col-lg-6 text-lg-end">
                     <p>
-                        <a href="#" target="_blank" class="btn btn-primary text-white py-3 px-4">View all
+                        <a href="{{ route('properties.index') }}" target="_blank"
+                            class="btn btn-primary text-white py-3 px-4">View all
                             properties</a>
                     </p>
                 </div>
@@ -44,275 +45,44 @@
                 <div class="col-12">
                     <div class="property-slider-wrap">
                         <div class="property-slider">
-                            <div class="property-item">
-                                <a href="property-single.html" class="img">
-                                    <img src="{{ asset('assets/images/img_1.jpg') }}" alt="Image" class="img-fluid" />
-                                </a>
+                            @foreach ($popular_properties as $item)
+                                <div class="property-item">
+                                    <a href="{{ route('properties.show', $item->id) }}" class="img">
+                                        <img src="{{ asset($item->thumbnail) }}" alt="Image"
+                                            class="img-fluid object-fit-cover" style="aspect-ratio: 4/3;" /> </a>
 
-                                <div class="property-content">
-                                    <div class="price mb-2"><span>$1,291,000</span></div>
-                                    <div>
-                                        <span class="d-block mb-2 text-black-50">5232 California Fake, Ave. 21BC</span>
-                                        <span class="city d-block mb-3">California, USA</span>
-
-                                        <div class="specs d-flex mb-4">
-                                            <span class="d-block d-flex align-items-center me-3">
-                                                <span class="icon-bed me-2"></span>
-                                                <span class="caption">2 beds</span>
-                                            </span>
-                                            <span class="d-block d-flex align-items-center">
-                                                <span class="icon-bath me-2"></span>
-                                                <span class="caption">2 baths</span>
-                                            </span>
+                                    <div class="property-content">
+                                        <div class="price mb-2">
+                                            <span>{{ 'Rp ' . number_format($item->price, 0, ',', '.') }}</span>
                                         </div>
+                                        <div>
+                                            <span class="d-block mb-2 text-black-50">{{ $item->name }}</span>
+                                            <span class="city d-block mb-3">{{ $item->city }}</span>
 
-                                        <a href="property-single.html" class="btn btn-primary py-2 px-3">See
-                                            details</a>
+                                            <div class="specs d-flex mb-4">
+                                                <span class="d-block d-flex align-items-center me-3">
+                                                    <span class="icon-bed me-2"></span>
+                                                    <span class="caption">{{ $item->bedrooms }} beds</span>
+                                                </span>
+                                                <span class="d-block d-flex align-items-center">
+                                                    <span class="icon-bath me-2"></span>
+                                                    <span class="caption">{{ $item->bathrooms }} baths</span>
+                                                </span>
+                                            </div>
+
+                                            <a href="{{ route('properties.show', $item->id) }}"
+                                                class="btn btn-primary py-2 px-3">See
+                                                details</a>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- .item -->
-
-                            <div class="property-item">
-                                <a href="property-single.html" class="img">
-                                    <img src="{{ asset('assets/images/img_2.jpg') }}" alt="Image" class="img-fluid" />
-                                </a>
-
-                                <div class="property-content">
-                                    <div class="price mb-2"><span>$1,291,000</span></div>
-                                    <div>
-                                        <span class="d-block mb-2 text-black-50">5232 California Fake, Ave. 21BC</span>
-                                        <span class="city d-block mb-3">California, USA</span>
-
-                                        <div class="specs d-flex mb-4">
-                                            <span class="d-block d-flex align-items-center me-3">
-                                                <span class="icon-bed me-2"></span>
-                                                <span class="caption">2 beds</span>
-                                            </span>
-                                            <span class="d-block d-flex align-items-center">
-                                                <span class="icon-bath me-2"></span>
-                                                <span class="caption">2 baths</span>
-                                            </span>
-                                        </div>
-
-                                        <a href="property-single.html" class="btn btn-primary py-2 px-3">See
-                                            details</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- .item -->
-
-                            <div class="property-item">
-                                <a href="property-single.html" class="img">
-                                    <img src="{{ asset('assets/images/img_3.jpg') }}" alt="Image" class="img-fluid" />
-                                </a>
-
-                                <div class="property-content">
-                                    <div class="price mb-2"><span>$1,291,000</span></div>
-                                    <div>
-                                        <span class="d-block mb-2 text-black-50">5232 California Fake, Ave. 21BC</span>
-                                        <span class="city d-block mb-3">California, USA</span>
-
-                                        <div class="specs d-flex mb-4">
-                                            <span class="d-block d-flex align-items-center me-3">
-                                                <span class="icon-bed me-2"></span>
-                                                <span class="caption">2 beds</span>
-                                            </span>
-                                            <span class="d-block d-flex align-items-center">
-                                                <span class="icon-bath me-2"></span>
-                                                <span class="caption">2 baths</span>
-                                            </span>
-                                        </div>
-
-                                        <a href="property-single.html" class="btn btn-primary py-2 px-3">See
-                                            details</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- .item -->
-
-                            <div class="property-item">
-                                <a href="property-single.html" class="img">
-                                    <img src="{{ asset('assets/images/img_4.jpg') }}" alt="Image" class="img-fluid" />
-                                </a>
-
-                                <div class="property-content">
-                                    <div class="price mb-2"><span>$1,291,000</span></div>
-                                    <div>
-                                        <span class="d-block mb-2 text-black-50">5232 California Fake, Ave. 21BC</span>
-                                        <span class="city d-block mb-3">California, USA</span>
-
-                                        <div class="specs d-flex mb-4">
-                                            <span class="d-block d-flex align-items-center me-3">
-                                                <span class="icon-bed me-2"></span>
-                                                <span class="caption">2 beds</span>
-                                            </span>
-                                            <span class="d-block d-flex align-items-center">
-                                                <span class="icon-bath me-2"></span>
-                                                <span class="caption">2 baths</span>
-                                            </span>
-                                        </div>
-
-                                        <a href="property-single.html" class="btn btn-primary py-2 px-3">See
-                                            details</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- .item -->
-
-                            <div class="property-item">
-                                <a href="property-single.html" class="img">
-                                    <img src="{{ asset('assets/images/img_5.jpg') }}" alt="Image" class="img-fluid" />
-                                </a>
-
-                                <div class="property-content">
-                                    <div class="price mb-2"><span>$1,291,000</span></div>
-                                    <div>
-                                        <span class="d-block mb-2 text-black-50">5232 California Fake, Ave. 21BC</span>
-                                        <span class="city d-block mb-3">California, USA</span>
-
-                                        <div class="specs d-flex mb-4">
-                                            <span class="d-block d-flex align-items-center me-3">
-                                                <span class="icon-bed me-2"></span>
-                                                <span class="caption">2 beds</span>
-                                            </span>
-                                            <span class="d-block d-flex align-items-center">
-                                                <span class="icon-bath me-2"></span>
-                                                <span class="caption">2 baths</span>
-                                            </span>
-                                        </div>
-
-                                        <a href="property-single.html" class="btn btn-primary py-2 px-3">See
-                                            details</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- .item -->
-
-                            <div class="property-item">
-                                <a href="property-single.html" class="img">
-                                    <img src="{{ asset('assets/images/img_6.jpg') }}" alt="Image" class="img-fluid" />
-                                </a>
-
-                                <div class="property-content">
-                                    <div class="price mb-2"><span>$1,291,000</span></div>
-                                    <div>
-                                        <span class="d-block mb-2 text-black-50">5232 California Fake, Ave. 21BC</span>
-                                        <span class="city d-block mb-3">California, USA</span>
-
-                                        <div class="specs d-flex mb-4">
-                                            <span class="d-block d-flex align-items-center me-3">
-                                                <span class="icon-bed me-2"></span>
-                                                <span class="caption">2 beds</span>
-                                            </span>
-                                            <span class="d-block d-flex align-items-center">
-                                                <span class="icon-bath me-2"></span>
-                                                <span class="caption">2 baths</span>
-                                            </span>
-                                        </div>
-
-                                        <a href="property-single.html" class="btn btn-primary py-2 px-3">See
-                                            details</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- .item -->
-
-                            <div class="property-item">
-                                <a href="property-single.html" class="img">
-                                    <img src="{{ asset('assets/images/img_7.jpg') }}" alt="Image" class="img-fluid" />
-                                </a>
-
-                                <div class="property-content">
-                                    <div class="price mb-2"><span>$1,291,000</span></div>
-                                    <div>
-                                        <span class="d-block mb-2 text-black-50">5232 California Fake, Ave. 21BC</span>
-                                        <span class="city d-block mb-3">California, USA</span>
-
-                                        <div class="specs d-flex mb-4">
-                                            <span class="d-block d-flex align-items-center me-3">
-                                                <span class="icon-bed me-2"></span>
-                                                <span class="caption">2 beds</span>
-                                            </span>
-                                            <span class="d-block d-flex align-items-center">
-                                                <span class="icon-bath me-2"></span>
-                                                <span class="caption">2 baths</span>
-                                            </span>
-                                        </div>
-
-                                        <a href="property-single.html" class="btn btn-primary py-2 px-3">See
-                                            details</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- .item -->
-
-                            <div class="property-item">
-                                <a href="property-single.html" class="img">
-                                    <img src="{{ asset('assets/images/img_8.jpg') }}" alt="Image"
-                                        class="img-fluid" />
-                                </a>
-
-                                <div class="property-content">
-                                    <div class="price mb-2"><span>$1,291,000</span></div>
-                                    <div>
-                                        <span class="d-block mb-2 text-black-50">5232 California Fake, Ave. 21BC</span>
-                                        <span class="city d-block mb-3">California, USA</span>
-
-                                        <div class="specs d-flex mb-4">
-                                            <span class="d-block d-flex align-items-center me-3">
-                                                <span class="icon-bed me-2"></span>
-                                                <span class="caption">2 beds</span>
-                                            </span>
-                                            <span class="d-block d-flex align-items-center">
-                                                <span class="icon-bath me-2"></span>
-                                                <span class="caption">2 baths</span>
-                                            </span>
-                                        </div>
-
-                                        <a href="property-single.html" class="btn btn-primary py-2 px-3">See
-                                            details</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- .item -->
-
-                            <div class="property-item">
-                                <a href="property-single.html" class="img">
-                                    <img src="{{ asset('assets/images/img_1.jpg') }}" alt="Image"
-                                        class="img-fluid" />
-                                </a>
-
-                                <div class="property-content">
-                                    <div class="price mb-2"><span>$1,291,000</span></div>
-                                    <div>
-                                        <span class="d-block mb-2 text-black-50">5232 California Fake, Ave. 21BC</span>
-                                        <span class="city d-block mb-3">California, USA</span>
-
-                                        <div class="specs d-flex mb-4">
-                                            <span class="d-block d-flex align-items-center me-3">
-                                                <span class="icon-bed me-2"></span>
-                                                <span class="caption">2 beds</span>
-                                            </span>
-                                            <span class="d-block d-flex align-items-center">
-                                                <span class="icon-bath me-2"></span>
-                                                <span class="caption">2 baths</span>
-                                            </span>
-                                        </div>
-
-                                        <a href="property-single.html" class="btn btn-primary py-2 px-3">See
-                                            details</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- .item -->
+                                <!-- .item -->
+                            @endforeach
                         </div>
 
                         <div id="property-nav" class="controls" tabindex="0" aria-label="Carousel Navigation">
-                            <span class="prev" data-controls="prev" aria-controls="property"
-                                tabindex="-1">Prev</span>
-                            <span class="next" data-controls="next" aria-controls="property"
-                                tabindex="-1">Next</span>
+                            <span class="prev" data-controls="prev" aria-controls="property" tabindex="-1">Prev</span>
+                            <span class="next" data-controls="next" aria-controls="property" tabindex="-1">Next</span>
                         </div>
                     </div>
                 </div>
@@ -328,41 +98,44 @@
                         <span class="flaticon-house"></span>
                         <h3 class="mb-3">Our Properties</h3>
                         <p>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                            Voluptates, accusamus.
+                            Temukan berbagai pilihan properti terbaik — dari rumah minimalis hingga hunian eksklusif.
+                            Kami menghadirkan properti yang sesuai dengan gaya hidup dan kebutuhan Anda.
                         </p>
                         <p><a href="#" class="learn-more">Learn More</a></p>
                     </div>
                 </div>
+
                 <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
                     <div class="box-feature">
                         <span class="flaticon-building"></span>
                         <h3 class="mb-3">Property for Sale</h3>
                         <p>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                            Voluptates, accusamus.
+                            Ingin memiliki properti sendiri? Kami menawarkan rumah, apartemen, dan lahan
+                            dengan harga bersaing serta lokasi strategis untuk tempat tinggal maupun investasi.
                         </p>
                         <p><a href="#" class="learn-more">Learn More</a></p>
                     </div>
                 </div>
+
                 <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
                     <div class="box-feature">
                         <span class="flaticon-house-3"></span>
                         <h3 class="mb-3">Real Estate Agent</h3>
                         <p>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                            Voluptates, accusamus.
+                            Tim agen profesional kami siap membantu Anda dalam setiap langkah,
+                            mulai dari pencarian, negosiasi harga, hingga proses transaksi yang aman dan mudah.
                         </p>
                         <p><a href="#" class="learn-more">Learn More</a></p>
                     </div>
                 </div>
+
                 <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="600">
                     <div class="box-feature">
                         <span class="flaticon-house-1"></span>
                         <h3 class="mb-3">House for Sale</h3>
                         <p>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                            Voluptates, accusamus.
+                            Temukan rumah idaman dengan desain modern, lingkungan nyaman, dan nilai investasi tinggi.
+                            Cocok untuk keluarga muda maupun Anda yang ingin berinvestasi di masa depan.
                         </p>
                         <p><a href="#" class="learn-more">Learn More</a></p>
                     </div>
@@ -498,18 +271,19 @@
             <div class="row justify-content-center text-center mb-5">
                 <div class="col-lg-5">
                     <h2 class="font-weight-bold heading text-primary mb-4">
-                        Let's find home that's perfect for you
+                        Let's find a home that's perfect for you
                     </h2>
                     <p class="text-black-50">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
-                        enim pariatur similique debitis vel nisi qui reprehenderit.
+                        Kami membantu Anda menemukan rumah impian yang sesuai dengan gaya hidup dan kebutuhan Anda.
+                        Mulai dari hunian minimalis hingga properti mewah — semuanya ada di satu tempat.
                     </p>
                 </div>
             </div>
+
             <div class="row justify-content-between mb-5">
                 <div class="col-lg-7 mb-5 mb-lg-0 order-lg-2">
                     <div class="img-about dots">
-                        <img src="{{ asset('assets/images/hero_bg_3') }}.jpg" alt="Image" class="img-fluid" />
+                        <img src="{{ asset('assets/images/hero_bg_3.jpg') }}" alt="Image" class="img-fluid" />
                     </div>
                 </div>
                 <div class="col-lg-4">
@@ -518,10 +292,11 @@
                             <span class="icon-home2"></span>
                         </span>
                         <div class="feature-text">
-                            <h3 class="heading">2M Properties</h3>
+                            <h3 class="heading">2M+ Properties</h3>
                             <p class="text-black-50">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Nostrum iste.
+                                Jelajahi lebih dari dua juta properti di berbagai kota. Dari rumah sederhana hingga proyek
+                                premium,
+                                kami menghadirkan beragam pilihan untuk memenuhi impian Anda.
                             </p>
                         </div>
                     </div>
@@ -533,8 +308,8 @@
                         <div class="feature-text">
                             <h3 class="heading">Top Rated Agents</h3>
                             <p class="text-black-50">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Nostrum iste.
+                                Dapatkan bantuan dari agen properti profesional dan berpengalaman yang siap mendampingi Anda
+                                dalam setiap proses — dari pencarian hingga pembelian rumah.
                             </p>
                         </div>
                     </div>
@@ -544,38 +319,39 @@
                             <span class="icon-security"></span>
                         </span>
                         <div class="feature-text">
-                            <h3 class="heading">Legit Properties</h3>
+                            <h3 class="heading">Verified & Legit Properties</h3>
                             <p class="text-black-50">
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                Nostrum iste.
+                                Setiap properti yang kami tampilkan telah melalui proses verifikasi menyeluruh,
+                                memastikan keamanan dan keaslian data agar Anda bisa bertransaksi dengan tenang.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="row section-counter mt-5">
                 <div class="col-6 col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
                     <div class="counter-wrap mb-5 mb-lg-0">
                         <span class="number"><span class="countup text-primary">3298</span></span>
-                        <span class="caption text-black-50"># of Buy Properties</span>
+                        <span class="caption text-black-50">Properti Dibeli</span>
                     </div>
                 </div>
                 <div class="col-6 col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
                     <div class="counter-wrap mb-5 mb-lg-0">
                         <span class="number"><span class="countup text-primary">2181</span></span>
-                        <span class="caption text-black-50"># of Sell Properties</span>
+                        <span class="caption text-black-50">Properti Dijual</span>
                     </div>
                 </div>
                 <div class="col-6 col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
                     <div class="counter-wrap mb-5 mb-lg-0">
                         <span class="number"><span class="countup text-primary">9316</span></span>
-                        <span class="caption text-black-50"># of All Properties</span>
+                        <span class="caption text-black-50">Total Listing Properti</span>
                     </div>
                 </div>
                 <div class="col-6 col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="600">
                     <div class="counter-wrap mb-5 mb-lg-0">
                         <span class="number"><span class="countup text-primary">7191</span></span>
-                        <span class="caption text-black-50"># of Agents</span>
+                        <span class="caption text-black-50">Agen Aktif</span>
                     </div>
                 </div>
             </div>
@@ -611,7 +387,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
+                {{-- <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
                     <div class="h-100 person">
                         <img src=" {{ asset('assets/images/person_1-min.jpg') }}" alt="Image" class="img-fluid" />
 
@@ -640,8 +416,39 @@
                             </ul>
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
+                </div> --}}
+
+                @foreach ($top_agents as $item)
+                    <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
+                        <div class="h-100 person">
+                            <img src=" {{ asset($item->profile_img) }}" alt="Image" class="img-fluid" />
+
+                            <div class="person-contents">
+                                <h2 class="mb-0"><a href="#">{{ $item->name }}</a></h2>
+                                <span class="meta d-block mb-3">Real Estate Agent</span>
+                                <p>
+                                    {{ $item->bio }}
+                                </p>
+
+                                <ul class="social list-unstyled list-inline dark-hover">
+                                    <li class="list-inline-item">
+                                        <a href="{{ $item->x_url }}"><span class="icon-twitter"></span></a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a href="{{ $item->wa_url }}"><span class="icon-whatsapp"></span></a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a href="{{ $item->tele_url }}"><span class="icon-telegram"></span></a>
+                                    </li>
+                                    <li class="list-inline-item">
+                                        <a href="{{ $item->ig_url }}"><span class="icon-instagram"></span></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+                {{-- <div class="col-sm-6 col-md-6 col-lg-4 mb-5 mb-lg-0">
                     <div class="h-100 person">
                         <img src=" {{ asset('assets/images/person_2-min.jpg') }}" alt="Image" class="img-fluid" />
 
@@ -700,7 +507,7 @@
                             </ul>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

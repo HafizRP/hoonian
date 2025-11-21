@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Property;
+use App\Models\PropertyType;
+use App\Models\Review;
 use App\Models\Roles;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -34,7 +37,8 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => "admin",
             'email' => 'admin@gmail.com',
-            'role' => '1',
+            'role' => 1,
+            'profile_img' => 'assets/images/person_1-min.jpg',
             'password' => Hash::make('password')
         ]);
 
@@ -44,8 +48,14 @@ class DatabaseSeeder extends Seeder
                 'name' => "Agent $num",
                 'email' => "ageng$num@gmail.com",
                 'role' => 2,
+
+                'profile_img' => 'assets/images/person_1-min.jpg',
                 'password' => Hash::make('password'),
             ]);
         }
+
+        PropertyType::factory(5)->create();
+        Property::factory(20)->create();
+        Review::factory(1000)->create();
     }
 }
