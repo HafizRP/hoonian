@@ -86,7 +86,7 @@ class PropertyController extends Controller
         $reviews = Review::with(['propertyReviews', 'customerReviews'])
             ->whereHas('propertyReviews', function ($q) use ($property) {
                 $q->where('owner_id', $property->owner->id);
-        })->limit(15)->get();
+            })->limit(15)->get();
 
         return view('property.detail', compact('property', 'reviews'));
     }
@@ -121,5 +121,11 @@ class PropertyController extends Controller
         $top_agents = User::where('role', 2)->limit(3)->get();
 
         return view('index', compact('popular_properties', 'top_agents'));
+    }
+
+    public function properties()
+    {
+        $properties = Property::with(['owner'])->paginate(10);
+        return view('admin.property.index', compact('properties'));
     }
 }

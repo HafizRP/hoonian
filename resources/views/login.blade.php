@@ -217,7 +217,7 @@
         <div class="divider"><span>atau</span></div>
 
         <!-- Tombol Google -->
-        <a href="{{ route('auth.login') }}" class="google-btn">
+        <a href="{{ route('auth.google.redirect') }}" class="google-btn">
             <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
             Login dengan Google
         </a>

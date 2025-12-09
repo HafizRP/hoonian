@@ -62,15 +62,27 @@
                                 <a href="{{ route('login') }}">Login</a>
                             </li>
                         @else
-                            <li>
-                                <a href="#" class=""
-                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    Logout
-                                </a>
+                            <li class="has-children">
+                                <a href="#">Hi, {{ Auth::user()->name }}</a>
+                                <ul class="dropdown">
+                                    <li><a href="{{ route('users.profile') }}">Profile</a></li>
 
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
+                                    @if (Auth::user()->role != 3)
+                                        <li><a href="{{ route('backoffice') }}">Backoffice</a></li>
+                                    @endif
+
+                                    <li>
+                                        <a href="#" class=""
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            Logout
+                                        </a>
+
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                            class="d-none">
+                                            @csrf
+                                        </form>
+                                    </li>
+                                </ul>
                             </li>
                         @endif
                     </ul>

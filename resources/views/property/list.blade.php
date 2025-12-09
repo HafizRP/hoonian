@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
-    <div class="hero page-inner overlay" style="background-image: url('{{ asset('assets/images/hero_bg_1.jpg') }}')">
+    {{-- <div class="hero page-inner overlay" style="background-image: url('{{ asset('assets/images/hero_bg_1.jpg') }}')">
         <div class="container">
             <div class="row justify-content-center align-items-center">
                 <div class="col-lg-9 text-center">
@@ -23,22 +23,26 @@
 
                         <div class="col-md-12">
                             <label class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control px-4" value="{{ request('name') }}" placeholder="e.g. New York">
+                            <input type="text" name="name" class="form-control px-4" value="{{ request('name') }}"
+                                placeholder="e.g. New York">
                         </div>
 
                         <div class="col-md-3">
                             <label class="form-label">City</label>
-                            <input type="text" name="city" class="form-control" value="{{ request('city') }}" placeholder="City">
+                            <input type="text" name="city" class="form-control" value="{{ request('city') }}"
+                                placeholder="City">
                         </div>
 
                         <div class="col-md-2">
                             <label class="form-label">Min Price</label>
-                            <input type="text" name="min_price" class="form-control" value="{{ request('min_price') }}" placeholder="e.g. 100000">
+                            <input type="text" name="min_price" class="form-control" value="{{ request('min_price') }}"
+                                placeholder="e.g. 100000">
                         </div>
 
                         <div class="col-md-2">
                             <label class="form-label">Max Price</label>
-                            <input type="text" name="max_price" class="form-control" value="{{ request('max_price') }}" placeholder="e.g. 500000">
+                            <input type="text" name="max_price" class="form-control" value="{{ request('max_price') }}"
+                                placeholder="e.g. 500000">
                         </div>
 
 
@@ -48,7 +52,72 @@
                                 <option value=""></option>
 
                                 @foreach ($properties_type as $item)
-                                    <option value="{{ $item->id }}" {{ request('type') == $item->id ? "selected" : "" }}> {{ $item->name }}
+                                    <option value="{{ $item->id }}"
+                                        {{ request('type') == $item->id ? 'selected' : '' }}> {{ $item->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-2 d-grid">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+
+    <div class="hero">
+        <div class="hero-slide">
+            <div class="img overlay" style="background-image: url({{ asset('assets/images/hero_bg_3.jpg') }}"></div>
+            <div class="img overlay" style="background-image: url({{ asset('assets/images/hero_bg_2.jpg') }}"></div>
+            <div class="img overlay" style="background-image: url({{ asset('assets/images/hero_bg_1.jpg') }}"></div>
+        </div>
+
+        <div class="container">
+            <div class="row justify-content-center align-items-center">
+                <div class="col-lg-9 text-white">
+                    <h1 class="heading text-center" data-aos="fade-up">
+                        Easiest way to find your dream home
+                    </h1>
+                    <form action="{{ route('properties.index') }}" method="GET"
+                        class="row g-3 align-items-end form-search" data-aos="fade-up" data-aos-delay="200">
+
+                        <div class="col-md-12">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control px-4" value="{{ request('name') }}"
+                                placeholder="e.g. New York">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">City</label>
+                            <input type="text" name="city" class="form-control" value="{{ request('city') }}"
+                                placeholder="City">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Min Price</label>
+                            <input type="text" name="min_price" class="form-control" value="{{ request('min_price') }}"
+                                placeholder="e.g. 100000">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label">Max Price</label>
+                            <input type="text" name="max_price" class="form-control"
+                                value="{{ request('max_price') }}" placeholder="e.g. 500000">
+                        </div>
+
+
+                        <div class="col-md-3">
+                            <label class="form-label">Type</label>
+                            <select name="type" class="form-control">
+                                <option value=""></option>
+
+                                @foreach ($properties_type as $item)
+                                    <option value="{{ $item->id }}"
+                                        {{ request('type') == $item->id ? 'selected' : '' }}> {{ $item->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -349,8 +418,10 @@
                         </div>
 
                         <div id="property-nav" class="controls" tabindex="0" aria-label="Carousel Navigation">
-                            <span class="prev" data-controls="prev" aria-controls="property" tabindex="-1">Prev</span>
-                            <span class="next" data-controls="next" aria-controls="property" tabindex="-1">Next</span>
+                            <span class="prev" data-controls="prev" aria-controls="property"
+                                tabindex="-1">Prev</span>
+                            <span class="next" data-controls="next" aria-controls="property"
+                                tabindex="-1">Next</span>
                         </div>
                     </div>
                 </div>
