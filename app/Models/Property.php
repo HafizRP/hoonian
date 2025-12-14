@@ -12,6 +12,7 @@ class Property extends Model
         'name',
         'price',
         'address',
+        'city',
         'thumbnail',
         'description',
         'land_area',
@@ -20,10 +21,18 @@ class Property extends Model
         'bathrooms',
         'floors',
         'maps_url',
-        'status'
+        'status',
+        'featured',
+        'popular',
+        'owner_id',
+        'property_type'
     ];
 
     public function owner() {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function gallery() {
+        return $this->hasMany(PropertyGallery::class, 'property_id');
     }
 }

@@ -48,7 +48,7 @@
                             @foreach ($popular_properties as $item)
                                 <div class="property-item">
                                     <a href="{{ route('properties.show', $item->id) }}" class="img">
-                                        <img src="{{ asset($item->thumbnail) }}" alt="Image"
+                                        <img src="{{ asset('storage/' . $item->thumbnail) }}" alt="Image"
                                             class="img-fluid object-fit-cover" style="aspect-ratio: 4/3;" /> </a>
 
                                     <div class="property-content">

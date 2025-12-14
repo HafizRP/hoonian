@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Property;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -16,7 +18,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with('roleData')->paginate(10);
+        // Gunakan orderBy
+        $users = User::with('roleData')->orderBy('id', 'ASC')->get();
         return view('admin.user.index', compact('users'));
     }
 
@@ -33,7 +36,22 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'role' => 'required'
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+            'profile_img' => null // Optional: add default or handle upload
+        ]);
+
+        return redirect()->back()->with('success', 'User created successfully.');
     }
 
     /**
@@ -57,7 +75,21 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'role' => 'required'
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role' => $request->role
+        ]);
+
+        return redirect()->back()->with('success', 'User updated successfully.');
     }
 
     /**
@@ -65,7 +97,10 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->back()->with('success', 'User deleted successfully.');
     }
 
     public function loginView()
@@ -208,30 +243,70 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         try {
-            $auth = Auth::user();
+            $user = Auth::user();
 
-            // 1️⃣ Validasi input
+            // 1️⃣ Validasi input (tambahkan validasi untuk image)
             $data = $request->validate([
                 'name' => 'required|string|max:255',
-
-                // abaikan email user yg sedang login:
-                'email' => 'required|email|max:255|unique:users,email,' . $auth->id,
-
+                'email' => 'required|email|max:255|unique:users,email,' . $user->id,
                 'bio' => 'nullable|string',
                 'ig_url' => 'nullable|string',
                 'wa_url' => 'nullable|string',
                 'x_url' => 'nullable|string',
+                'profile_img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // max 2MB
             ]);
 
-            // 2️⃣ Update data user
-            $user = User::find($auth->id);
+            // dd($data);
 
+            // 2️⃣ Handle Image Upload
+            if ($request->hasFile('profile_img')) {
+                // Hapus foto lama jika ada dan file-nya eksis di folder
+                if ($user->profile_img && file_exists(public_path($user->profile_img))) {
+                    unlink(public_path($user->profile_img));
+                }
+
+                // Buat nama file unik
+                $imageName = time() . '-' . $user->id . '.' . $request->profile_img->extension();
+
+                // Pindahkan file ke folder public/uploads/profiles
+                $request->profile_img->move(public_path('uploads/profiles'), $imageName);
+
+                // Simpan path-nya ke array data untuk diupdate
+                $data['profile_img'] = 'uploads/profiles/' . $imageName;
+            }
+
+
+            // 3️⃣ Update data user
             $user->update($data);
 
-            // 3️⃣ Redirect balik
-            return redirect()->back()->with('success', 'Profile updated successfully!');
         } catch (\Throwable $th) {
-            throw $th;
+            return redirect()->back()->with('error', 'Something went wrong: ' . $th->getMessage());
         }
+    }
+
+    public function adminDashboard()
+    {
+        // 1. Statistics
+        $totalUsers = User::where('role', 'user')->count();
+        $totalProperties = Property::count();
+        $totalTransactions = Transaction::count();
+
+        // 2. Latest Properties (Top 3)
+        $latestProperties = Property::latest()->take(3)->get();
+
+        // 3. New Customers (Latest 3 Users)
+        $newCustomers = User::where('role', 'user')->latest()->take(3)->get();
+
+        // 4. Recent Transactions (Top 5)
+        $recentTransactions = Transaction::with(['user', 'property'])->latest()->take(5)->get();
+
+        return view('admin.index', compact(
+            'totalUsers',
+            'totalProperties',
+            'totalTransactions',
+            'latestProperties',
+            'newCustomers',
+            'recentTransactions'
+        ));
     }
 }

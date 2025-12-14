@@ -149,7 +149,7 @@
                             @foreach ($featured as $item)
                                 <div class="property-item">
                                     <a href="{{ route('properties.show', $item->id) }}" class="img">
-                                        <img src="{{ asset($item->thumbnail) }}" alt="Image"
+                                        <img src="{{ asset('storage/' . $item->thumbnail) }}" alt="Image"
                                             class="img-fluid object-fit-cover" style="aspect-ratio: 4/3;" /> </a>
 
                                     <div class="property-content">
@@ -431,12 +431,24 @@
 
     <div class="section section-properties">
         <div class="container">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             <div class="row">
-                @foreach ($properties as $item)
+                @forelse ($properties as $item)
                     <div class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
                         <div class="property-item mb-30">
                             <a href="{{ route('properties.show', $item->id) }}" class="img">
-                                <img src="{{ asset($item->thumbnail) }}" alt="Image"
+                                <img src="{{ asset('storage/' . $item->thumbnail) }}" alt="Image"
                                     class="img-fluid object-fit-cover" style="aspect-ratio: 4/3;" /> </a>
 
                             <div class="property-content">
@@ -466,7 +478,16 @@
                         </div>
                         <!-- .item -->
                     </div>
-                @endforeach
+                @empty
+                    <div class="col-12 text-center py-5">
+                        <div class="mb-4">
+                            <span class="icon-search display-1 text-muted"></span>
+                        </div>
+                        <h3 class="text-black-50">No properties found</h3>
+                        <p class="text-muted">Try adjusting your search criteria or filters.</p>
+                        <a href="{{ route('properties.index') }}" class="btn btn-primary mt-3">Clear Filters</a>
+                    </div>
+                @endforelse
             </div>
             {{ $properties->links('vendor.pagination.custom') }}
         </div>

@@ -18,36 +18,55 @@ class PropertyFactory extends Factory
      */
     public function definition(): array
     {
+        $faker = \Faker\Factory::create('id_ID');
+
         return [
-            'name' => $this->faker->streetName(),
-            'price' => $this->faker->randomFloat(2, 50000000, 5000000000), // 50 jt - 5 M
-            'address' => $this->faker->address(),
-            'thumbnail' => $this->faker->randomElement([
-                'assets/images/hero_bg_1.jpg',
-                'assets/images/hero_bg_2.jpg',
-                'assets/images/hero_bg_3.jpg',
-                'assets/images/img_1.jpg',
-                'assets/images/img_2.jpg',
-                'assets/images/img_3.jpg',
-                'assets/images/img_4.jpg',
-                'assets/images/img_5.jpg',
-                'assets/images/img_6.jpg',
-                'assets/images/img_7.jpg',
-                'assets/images/img_8.jpg',
-            ]),
-            'description' => $this->faker->paragraph(8),
-            'city' => $this->faker->city(),
-            'land_area' => $this->faker->randomFloat(2, 50, 500), // m2
-            'building_area' => $this->faker->randomFloat(2, 30, 400), // m2
-            'bedrooms' => $this->faker->numberBetween(1, 6),
-            'bathrooms' => $this->faker->numberBetween(1, 4),
-            'floors' => $this->faker->numberBetween(1, 3),
-            'maps_url' => 'https://www.google.com/maps/place/' . urlencode($this->faker->address()),
-            'status' => $this->faker->randomElement(['0', '1']), // 0 = tidak aktif, 1 = aktif,
-            'featured' => $this->faker->randomElement([true, false]),
-            'popular' => $this->faker->randomElement([true, false]),
-            'owner_id' => User::factory(), // relasi ke users
-            'property_type' => $this->faker->randomElement([1, 2, 3, 4, 5]), // relasi ke properties_type
+            'name' => 'Rumah ' . $faker->streetName(),
+            'price' => $faker->numberBetween(500, 5000) * 1000000, // 500 jt - 5 M (kelipatan juta)
+            'address' => $faker->address(),
+            'thumbnail' => function () {
+                $images = [
+                    'hero_bg_1.jpg', 'hero_bg_2.jpg', 'hero_bg_3.jpg',
+                    'img_1.jpg', 'img_2.jpg', 'img_3.jpg', 'img_4.jpg',
+                    'img_5.jpg', 'img_6.jpg', 'img_7.jpg', 'img_8.jpg'
+                ];
+                $imageName = \Illuminate\Support\Arr::random($images);
+                $sourcePath = public_path("assets/images/{$imageName}");
+                $destPath = "properties/seed/{$imageName}";
+
+                // Ensure directory exists and copy file if source exists
+                if (file_exists($sourcePath)) {
+                    // Create directory if not exists
+                    if (!\Illuminate\Support\Facades\Storage::disk('public')->exists('properties/seed')) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory('properties/seed');
+                    }
+                    
+                    // Copy file to storage/app/public/properties/seed/
+                    // Note: copy() needs absolute paths or streams. 
+                    // Let's use Storage::put with file_get_contents
+                    if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($destPath)) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->put($destPath, file_get_contents($sourcePath));
+                    }
+                    
+                    return $destPath;
+                }
+                
+                // Fallback if file not found (e.g. initial run before assets exist)
+                return "properties/seed/{$imageName}"; 
+            },
+            'description' => $faker->paragraph(5),
+            'city' => $faker->city(), // Kota di Indonesia
+            'land_area' => $faker->numberBetween(60, 500), // m2
+            'building_area' => $faker->numberBetween(36, 400), // m2
+            'bedrooms' => $faker->numberBetween(2, 6),
+            'bathrooms' => $faker->numberBetween(1, 4),
+            'floors' => $faker->numberBetween(1, 3),
+            'maps_url' => 'https://www.google.com/maps/search/?api=1&query=' . urlencode($faker->address()),
+            'status' => '1',
+            'featured' => $faker->boolean(20), // 20% chance
+            'popular' => $faker->boolean(30), // 30% chance
+            'owner_id' => User::inRandomOrder()->first()->id ?? User::factory(),
+            'property_type' => $faker->numberBetween(1, 5),
         ];
     }
 }

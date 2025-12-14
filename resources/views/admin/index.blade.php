@@ -4,14 +4,17 @@
     <div class="page-inner">
         <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
             <div>
-                <h3 class="fw-bold mb-3">Dashboard</h3>
-                <h6 class="op-7 mb-2">Free Bootstrap 5 Admin Dashboard</h6>
+                <h3 class="fw-bold mb-3">Dashboard Overview</h3>
+                <h6 class="op-7 mb-2">Welcome back, Admin! Here is your business summary.</h6>
             </div>
             <div class="ms-md-auto py-2 py-md-0">
-                <a href="#" class="btn btn-label-info btn-round me-2">Manage</a>
-                <a href="#" class="btn btn-primary btn-round">Add Customer</a>
+                <a href="#" class="btn btn-label-info btn-round me-2">Generate Report</a>
+                <button class="btn btn-primary btn-round" id="btn-add">
+                    <i class="fa fa-plus me-1"></i> Add Customer
+                </button>
             </div>
         </div>
+
         <div class="row">
             <div class="col-sm-6 col-md-3">
                 <div class="card card-stats card-round">
@@ -24,495 +27,121 @@
                             </div>
                             <div class="col col-stats ms-3 ms-sm-0">
                                 <div class="numbers">
-                                    <p class="card-category">Visitors</p>
-                                    <h4 class="card-title">1,294</h4>
+                                    <p class="card-category">Total Visitors</p>
+                                    <h4 class="card-title">{{ $totalUsers }}</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-3">
-                <div class="card card-stats card-round">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-icon">
-                                <div class="icon-big text-center icon-info bubble-shadow-small">
-                                    <i class="fas fa-user-check"></i>
-                                </div>
-                            </div>
-                            <div class="col col-stats ms-3 ms-sm-0">
-                                <div class="numbers">
-                                    <p class="card-category">Subscribers</p>
-                                    <h4 class="card-title">1303</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
-            <div class="col-sm-6 col-md-3">
-                <div class="card card-stats card-round">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-icon">
-                                <div class="icon-big text-center icon-success bubble-shadow-small">
-                                    <i class="fas fa-luggage-cart"></i>
-                                </div>
-                            </div>
-                            <div class="col col-stats ms-3 ms-sm-0">
-                                <div class="numbers">
-                                    <p class="card-category">Sales</p>
-                                    <h4 class="card-title">$ 1,345</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-3">
-                <div class="card card-stats card-round">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-icon">
-                                <div class="icon-big text-center icon-secondary bubble-shadow-small">
-                                    <i class="far fa-check-circle"></i>
-                                </div>
-                            </div>
-                            <div class="col col-stats ms-3 ms-sm-0">
-                                <div class="numbers">
-                                    <p class="card-category">Order</p>
-                                    <h4 class="card-title">576</h4>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card card-round">
-                    <div class="card-header">
-                        <div class="card-head-row">
-                            <div class="card-title">User Statistics</div>
-                            <div class="card-tools">
-                                <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
-                                    <span class="btn-label">
-                                        <i class="fa fa-pencil"></i>
-                                    </span>
-                                    Export
-                                </a>
-                                <a href="#" class="btn btn-label-info btn-round btn-sm">
-                                    <span class="btn-label">
-                                        <i class="fa fa-print"></i>
-                                    </span>
-                                    Print
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container" style="min-height: 375px">
-                            <canvas id="statisticsChart"></canvas>
-                        </div>
-                        <div id="myChartLegend"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card card-primary card-round">
-                    <div class="card-header">
-                        <div class="card-head-row">
-                            <div class="card-title">Daily Sales</div>
-                            <div class="card-tools">
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-label-light dropdown-toggle" type="button"
-                                        id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                        Export
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-category">March 25 - April 02</div>
-                    </div>
-                    <div class="card-body pb-0">
-                        <div class="mb-4 mt-2">
-                            <h1>$4,578.58</h1>
-                        </div>
-                        <div class="pull-in">
-                            <canvas id="dailySalesChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="card card-round">
-                    <div class="card-body pb-0">
-                        <div class="h1 fw-bold float-end text-primary">+5%</div>
-                        <h2 class="mb-2">17</h2>
-                        <p class="text-muted">Users online</p>
-                        <div class="pull-in sparkline-fix">
-                            <div id="lineChart"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-round">
                     <div class="card-header">
-                        <div class="card-head-row card-tools-still-right">
-                            <h4 class="card-title">Users Geolocation</h4>
-                            <div class="card-tools">
-                                <button class="btn btn-icon btn-link btn-primary btn-xs">
-                                    <span class="fa fa-angle-down"></span>
-                                </button>
-                                <button class="btn btn-icon btn-link btn-primary btn-xs btn-refresh-card">
-                                    <span class="fa fa-sync-alt"></span>
-                                </button>
-                                <button class="btn btn-icon btn-link btn-primary btn-xs">
-                                    <span class="fa fa-times"></span>
-                                </button>
-                            </div>
+                        <div class="d-flex align-items-center">
+                            <div class="card-title">Latest Properties</div>
+                            <a href="#" class="btn btn-primary btn-link ms-auto">View All <i class="fa fa-chevron-right ms-1"></i></a>
                         </div>
-                        <p class="card-category">
-                            Map of the distribution of users around the world
-                        </p>
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="table-responsive table-hover table-sales">
-                                    <table class="table">
-                                        <tbody>
-                                            <tr>
-                                                <td>
-                                                    <div class="flag">
-                                                        <img src="{{ asset('dashboard/assets/img/flags/id.png') }}"
-                                                            alt="indonesia" />
-                                                    </div>
-                                                </td>
-                                                <td>Indonesia</td>
-                                                <td class="text-end">2.320</td>
-                                                <td class="text-end">42.18%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="flag">
-                                                        <img src="{{ asset('dashboard/assets/img/flags/us.png') }}"
-                                                            alt="united states" />
-                                                    </div>
-                                                </td>
-                                                <td>USA</td>
-                                                <td class="text-end">240</td>
-                                                <td class="text-end">4.36%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="flag">
-                                                        <img src="{{ asset('dashboard/assets/img/flags/au.png') }}"
-                                                            alt="australia" />
-                                                    </div>
-                                                </td>
-                                                <td>Australia</td>
-                                                <td class="text-end">119</td>
-                                                <td class="text-end">2.16%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="flag">
-                                                        <img src="{{ asset('dashboard/assets/img/flags/ru.png') }}"
-                                                            alt="russia" />
-                                                    </div>
-                                                </td>
-                                                <td>Russia</td>
-                                                <td class="text-end">1.081</td>
-                                                <td class="text-end">19.65%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="flag">
-                                                        <img src="{{ asset('dashboard/assets/img/flags/cn.png') }}"
-                                                            alt="china" />
-                                                    </div>
-                                                </td>
-                                                <td>China</td>
-                                                <td class="text-end">1.100</td>
-                                                <td class="text-end">20%</td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="flag">
-                                                        <img src="{{ asset('dashboard/assets/img/flags/br.png') }}"
-                                                            alt="brazil" />
-                                                    </div>
-                                                </td>
-                                                <td>Brasil</td>
-                                                <td class="text-end">640</td>
-                                                <td class="text-end">11.63%</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                            @foreach($latestProperties as $p)
+                            <div class="col-md-4 mb-3">
+                                <div class="card card-post card-round shadow-sm border">
+                                    <div class="card-body">
+                                        <div class="info-post">
+                                            <p class="username fw-bold mb-0 text-truncate">{{ $p->name }}</p>
+                                            <p class="small text-muted mb-2"><i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $p->city }}</p>
+                                        </div>
+                                        <div class="separator-solid my-2"></div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h3 class="card-title fw-bold text-primary" style="font-size: 1.1rem">
+                                                Rp {{ number_format($p->price, 0, ',', '.') }}
+                                            </h3>
+                                            <span class="badge badge-info">{{ $p->property_type }}</span>
+                                        </div>
+                                        <div class="mt-3">
+                                            <a href="{{ route('properties.show', $p->id) }}" class="btn btn-outline-primary btn-sm btn-round btn-detail-prop" target="_blank">Details</a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mapcontainer">
-                                    <div id="world-map" class="w-100" style="height: 300px"></div>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="row">
             <div class="col-md-4">
                 <div class="card card-round">
+                    <div class="card-header">
+                        <div class="card-title">New Customers</div>
+                    </div>
                     <div class="card-body">
-                        <div class="card-head-row card-tools-still-right">
-                            <div class="card-title">New Customers</div>
-                            <div class="card-tools">
-                                <div class="dropdown">
-                                    <button class="btn btn-icon btn-clean me-0" type="button" id="dropdownMenuButton"
-                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
+                        <div class="card-list py-2">
+                            @foreach ($newCustomers as $c)
+                                <div class="item-list d-flex align-items-center mb-3">
+                                    <div class="avatar">
+                                        <img src="{{ $c->profile_img ? asset($c->profile_img) : 'https://via.placeholder.com/50' }}" alt="..." class="avatar-img rounded-circle" />
+                                    </div>
+                                    <div class="info-user ms-3">
+                                        <div class="username fw-bold">{{ $c->name }}</div>
+                                        <div class="status small text-muted">{{ $c->email }}</div>
+                                    </div>
+                                    <div class="ms-auto">
+                                        <button class="btn btn-icon btn-link btn-primary btn-email" data-name="{{ $c->name }}">
+                                            <i class="far fa-envelope"></i>
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="card-list py-4">
-                            <div class="item-list">
-                                <div class="avatar">
-                                    <img src="{{ asset('dashboard/assets/img/jm_denis.jpg') }}" alt="..."
-                                        class="avatar-img rounded-circle" />
-                                </div>
-                                <div class="info-user ms-3">
-                                    <div class="username">Jimmy Denis</div>
-                                    <div class="status">Graphic Designer</div>
-                                </div>
-                                <button class="btn btn-icon btn-link op-8 me-1">
-                                    <i class="far fa-envelope"></i>
-                                </button>
-                                <button class="btn btn-icon btn-link btn-danger op-8">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                            </div>
-                            <div class="item-list">
-                                <div class="avatar">
-                                    <span class="avatar-title rounded-circle border border-white">CF</span>
-                                </div>
-                                <div class="info-user ms-3">
-                                    <div class="username">Chandra Felix</div>
-                                    <div class="status">Sales Promotion</div>
-                                </div>
-                                <button class="btn btn-icon btn-link op-8 me-1">
-                                    <i class="far fa-envelope"></i>
-                                </button>
-                                <button class="btn btn-icon btn-link btn-danger op-8">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                            </div>
-                            <div class="item-list">
-                                <div class="avatar">
-                                    <img src="{{ asset('dashboard/assets/img/talha.jpg') }}" alt="..."
-                                        class="avatar-img rounded-circle" />
-                                </div>
-                                <div class="info-user ms-3">
-                                    <div class="username">Talha</div>
-                                    <div class="status">Front End Designer</div>
-                                </div>
-                                <button class="btn btn-icon btn-link op-8 me-1">
-                                    <i class="far fa-envelope"></i>
-                                </button>
-                                <button class="btn btn-icon btn-link btn-danger op-8">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                            </div>
-                            <div class="item-list">
-                                <div class="avatar">
-                                    <img src="{{ asset('dashboard/assets/img/chadengle.jpg') }}" alt="..."
-                                        class="avatar-img rounded-circle" />
-                                </div>
-                                <div class="info-user ms-3">
-                                    <div class="username">Chad</div>
-                                    <div class="status">CEO Zeleaf</div>
-                                </div>
-                                <button class="btn btn-icon btn-link op-8 me-1">
-                                    <i class="far fa-envelope"></i>
-                                </button>
-                                <button class="btn btn-icon btn-link btn-danger op-8">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                            </div>
-                            <div class="item-list">
-                                <div class="avatar">
-                                    <span class="avatar-title rounded-circle border border-white bg-primary">H</span>
-                                </div>
-                                <div class="info-user ms-3">
-                                    <div class="username">Hizrian</div>
-                                    <div class="status">Web Designer</div>
-                                </div>
-                                <button class="btn btn-icon btn-link op-8 me-1">
-                                    <i class="far fa-envelope"></i>
-                                </button>
-                                <button class="btn btn-icon btn-link btn-danger op-8">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                            </div>
-                            <div class="item-list">
-                                <div class="avatar">
-                                    <span class="avatar-title rounded-circle border border-white bg-secondary">F</span>
-                                </div>
-                                <div class="info-user ms-3">
-                                    <div class="username">Farrah</div>
-                                    <div class="status">Marketing</div>
-                                </div>
-                                <button class="btn btn-icon btn-link op-8 me-1">
-                                    <i class="far fa-envelope"></i>
-                                </button>
-                                <button class="btn btn-icon btn-link btn-danger op-8">
-                                    <i class="fas fa-ban"></i>
-                                </button>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="col-md-8">
                 <div class="card card-round">
-                    <div class="card-header">
-                        <div class="card-head-row card-tools-still-right">
-                            <div class="card-title">Transaction History</div>
-                            <div class="card-tools">
-                                <div class="dropdown">
-                                    <button class="btn btn-icon btn-clean me-0" type="button" id="dropdownMenuButton"
-                                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="card-header d-flex align-items-center">
+                        <div class="card-title">Transaction History</div>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body">
                         <div class="table-responsive">
-                            <!-- Projects table -->
-                            <table class="table align-items-center mb-0">
+                            <table id="dashboard-table" class="table align-items-center mb-0">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th scope="col">Payment Number</th>
-                                        <th scope="col" class="text-end">Date & Time</th>
+                                        <th scope="col">Payment Details</th>
+                                        <th scope="col" class="text-end">Date</th>
                                         <th scope="col" class="text-end">Amount</th>
                                         <th scope="col" class="text-end">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th scope="row">
-                                            <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                            Payment from #10231
-                                        </th>
-                                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                        <td class="text-end">$250.00</td>
-                                        <td class="text-end">
-                                            <span class="badge badge-success">Completed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">
-                                            <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                            Payment from #10231
-                                        </th>
-                                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                        <td class="text-end">$250.00</td>
-                                        <td class="text-end">
-                                            <span class="badge badge-success">Completed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">
-                                            <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                            Payment from #10231
-                                        </th>
-                                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                        <td class="text-end">$250.00</td>
-                                        <td class="text-end">
-                                            <span class="badge badge-success">Completed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">
-                                            <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                            Payment from #10231
-                                        </th>
-                                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                        <td class="text-end">$250.00</td>
-                                        <td class="text-end">
-                                            <span class="badge badge-success">Completed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">
-                                            <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                            Payment from #10231
-                                        </th>
-                                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                        <td class="text-end">$250.00</td>
-                                        <td class="text-end">
-                                            <span class="badge badge-success">Completed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">
-                                            <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                            Payment from #10231
-                                        </th>
-                                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                        <td class="text-end">$250.00</td>
-                                        <td class="text-end">
-                                            <span class="badge badge-success">Completed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">
-                                            <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                <i class="fa fa-check"></i>
-                                            </button>
-                                            Payment from #10231
-                                        </th>
-                                        <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                        <td class="text-end">$250.00</td>
-                                        <td class="text-end">
-                                            <span class="badge badge-success">Completed</span>
-                                        </td>
-                                    </tr>
+                                    @foreach ($recentTransactions as $t)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar avatar-sm me-2">
+                                                         <img src="{{ $t->user->profile_img ? asset($t->user->profile_img) : 'https://via.placeholder.com/30' }}" class="avatar-img rounded-circle"/>
+                                                    </div>
+                                                    <span class="fw-bold">{{ $t->user->name }}</span>
+                                                </div>
+                                                <small class="text-muted d-block mt-1">Property: {{ $t->property->name ?? 'Deleted' }}</small>
+                                            </td>
+                                            <td class="text-end">{{ $t->created_at->format('M d, Y') }}</td>
+                                            <td class="text-end fw-bold">Rp {{ number_format($t->amount, 0, ',', '.') }}</td>
+                                            <td class="text-end">
+                                                <span class="badge badge-{{ $t->status == 'accepted' ? 'success' : ($t->status == 'rejected' ? 'danger' : 'warning') }}">
+                                                    {{ $t->status }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -521,33 +150,77 @@
             </div>
         </div>
     </div>
-    </div>
+@endsection
 
-    <footer class="footer">
-        <div class="container-fluid d-flex justify-content-between">
-            <nav class="pull-left">
-                <ul class="nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://www.themekita.com">
-                            ThemeKita
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"> Help </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"> Licenses </a>
-                    </li>
-                </ul>
-            </nav>
-            <div class="copyright">
-                2024, made with <i class="fa fa-heart heart text-danger"></i> by
-                <a href="http://www.themekita.com">ThemeKita</a>
-            </div>
-            <div>
-                Distributed by
-                <a target="_blank" href="https://themewagon.com/">ThemeWagon</a>.
-            </div>
-        </div>
-    </footer>
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            // 1. Inisialisasi DataTable
+            $('#dashboard-table').DataTable({
+                "pageLength": 5,
+                "searching": false,
+                "lengthChange": false,
+                "info": false,
+                "language": {
+                    "paginate": { "next": '<i class="fa fa-chevron-right"></i>', "previous": '<i class="fa fa-chevron-left"></i>' }
+                }
+            });
+
+            // 2. Alert Add Customer
+            $('#btn-add').on('click', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'New Customer',
+                    text: "Open the registration form?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Open',
+                    customClass: { confirmButton: 'btn btn-primary', cancelButton: 'btn btn-danger' },
+                    buttonsStyling: false
+                });
+            });
+
+            // 3. Email & Ban Alerts (Delegated)
+            $(document).on('click', '.btn-email', function() {
+                Swal.fire('Info', `Prepare email for ${$(this).data('name')}?`, 'info');
+            });
+
+            $(document).on('click', '.btn-ban', function() {
+                Swal.fire({
+                    title: `Block ${$(this).data('name')}?`,
+                    text: "Action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Block It!',
+                    confirmButtonColor: '#d33'
+                });
+            });
+
+            // 4. Toast Verify Payment
+            $(document).on('click', '.btn-check-pay', function() {
+                Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                }).fire({ icon: 'success', title: 'Payment verified' });
+            });
+
+            // 5. Property Detail Alert
+            $(document).on('click', '.btn-detail-prop', function() {
+                Swal.fire('Property Detail', `Showing details for ${$(this).data('name')}`, 'info');
+            });
+
+            // 6. Wishlist Toggle
+            $(document).on('click', '.btn-wishlist', function() {
+                const icon = $(this).find('i');
+                icon.toggleClass('far fas text-danger');
+                if(icon.hasClass('fas')) {
+                    Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 })
+                    .fire({ icon: 'success', title: 'Added to favorites' });
+                }
+            });
+        });
+    </script>
 @endsection

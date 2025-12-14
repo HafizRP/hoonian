@@ -8,6 +8,7 @@ use App\Models\Property;
 use App\Models\PropertyType;
 use App\Models\Review;
 use App\Models\Roles;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -54,8 +55,15 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        PropertyType::factory(5)->create();
+        $types = ['Rumah', 'Apartemen', 'Ruko', 'Villa', 'Tanah'];
+        foreach ($types as $type) {
+            PropertyType::create(['name' => $type]);
+        }
+
         Property::factory(20)->create();
         Review::factory(1000)->create();
+        
+        // Create transactions (bids) for properties
+        Transaction::factory(50)->create();
     }
 }

@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
+use App\Models\PropertyGallery;
 use App\Models\PropertyType;
 use App\Models\Review;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PropertyController extends Controller
 {
@@ -65,7 +68,8 @@ class PropertyController extends Controller
      */
     public function create()
     {
-        //
+        $properties_type = PropertyType::all();
+        return view('property.create', compact('properties_type'));
     }
 
     /**
@@ -73,7 +77,67 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // 1. Validasi Input sesuai struktur table
+        $request->validate([
+            'name'          => 'required|string|max:255',
+            'price'         => 'required|numeric',
+            'address'       => 'required|string',
+            'city'          => 'required|string',
+            'thumbnail'     => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'images.*'      => 'image|mimes:jpeg,png,jpg|max:2048', // Untuk Gallery
+            'property_type' => 'required|exists:properties_type,id',
+            'owner_id'      => 'required|exists:users,id',
+        ]);
+
+        // Gunakan Transaction agar jika salah satu gagal, data tidak tersimpan setengah-setengah
+        DB::beginTransaction();
+
+        try {
+            // 2. Upload Thumbnail Utama
+            $thumbnailPath = null;
+            if ($request->hasFile('thumbnail')) {
+                $thumbnailPath = $request->file('thumbnail')->store('properties/thumbnails', 'public');
+            }
+
+            // 3. Simpan ke table properties
+            $property = Property::create([
+                'name'          => $request->name,
+                'price'         => $request->price,
+                'address'       => $request->address,
+                'city'          => $request->city,
+                'thumbnail'     => $thumbnailPath,
+                'description'   => $request->description,
+                'land_area'     => $request->land_area,
+                'building_area' => $request->building_area,
+                'bedrooms'      => $request->bedrooms,
+                'bathrooms'     => $request->bathrooms,
+                'floors'        => $request->floors,
+                'maps_url'      => $request->maps_url,
+                'featured'      => $request->featured ?? 0,
+                'popular'       => $request->popular ?? 0,
+                'status'        => $request->status ?? '1',
+                'owner_id'      => $request->owner_id,
+                'property_type' => $request->property_type,
+            ]);
+
+            // 4. Proses Multiple Images untuk table properties_gallery
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $file) {
+                    $galleryPath = $file->store('properties/gallery', 'public');
+
+                    PropertyGallery::create([
+                        'property_id' => $property->id,
+                        'url'         => $galleryPath,
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('properties.index')->with('success', 'Property created successfully!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -102,9 +166,59 @@ class PropertyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Property $property)
+    public function update(Request $request, $id)
     {
-        //
+        $property = Property::findOrFail($id);
+
+        // 1. Validasi
+        $request->validate([
+            'name'          => 'required|string|max:255',
+            'price'         => 'required|numeric',
+            'thumbnail'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'images.*'      => 'image|mimes:jpeg,png,jpg|max:2048',
+            'property_type' => 'required|exists:properties_type,id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $data = $request->all();
+
+            // 2. Logika Update Thumbnail (Jika ada file baru)
+            if ($request->hasFile('thumbnail')) {
+                // Hapus thumbnail lama dari storage jika ada
+                if ($property->thumbnail) {
+                    Storage::disk('public')->delete($property->thumbnail);
+                }
+                // Simpan thumbnail baru
+                $data['thumbnail'] = $request->file('thumbnail')->store('properties/thumbnails', 'public');
+            }
+
+            // 3. Konversi checkbox (featured/popular) agar tidak null
+            $data['featured'] = $request->has('featured') ? 1 : 0;
+            $data['popular'] = $request->has('popular') ? 1 : 0;
+
+            // 4. Update data di tabel properties
+            $property->update($data);
+
+            // 5. Tambah Gallery Baru (Jika ada file gallery baru diupload)
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $file) {
+                    $galleryPath = $file->store('properties/gallery', 'public');
+
+                    PropertyGallery::create([
+                        'property_id' => $property->id,
+                        'url'         => $galleryPath,
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('properties.index')->with('success', 'Property updated successfully!');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', 'Update failed: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -112,7 +226,33 @@ class PropertyController extends Controller
      */
     public function destroy(Property $property)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            // 1. Delete Thumbnail
+            if ($property->thumbnail && Storage::disk('public')->exists($property->thumbnail)) {
+                Storage::disk('public')->delete($property->thumbnail);
+            }
+
+            // 2. Delete Gallery Images
+            foreach ($property->gallery as $gal) {
+                if ($gal->url && Storage::disk('public')->exists($gal->url)) {
+                    Storage::disk('public')->delete($gal->url);
+                }
+            }
+            // Delete gallery records (cascade will handle this if set, but explicit is safer)
+            $property->gallery()->delete();
+
+            // 3. Delete Property Record
+            $property->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Property deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Failed to delete property: ' . $e->getMessage());
+        }
     }
 
     public function home()
@@ -127,5 +267,19 @@ class PropertyController extends Controller
     {
         $properties = Property::with(['owner'])->paginate(10);
         return view('admin.property.index', compact('properties'));
+    }
+
+    public function backofficeCreate()
+    {
+        $types = PropertyType::all();
+        $users = User::all();
+        return view('admin.property.create', compact('types', 'users'));
+    }
+
+    public function backofficeEdit(Request $request, $id) {
+        $property = Property::findOrFail($id);
+        $types = PropertyType::all();
+        $users = User::all();
+        return view('admin.property.edit', compact('property', 'types', 'users'));
     }
 }
