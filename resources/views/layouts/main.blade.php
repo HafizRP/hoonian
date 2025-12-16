@@ -15,6 +15,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap"
         rel="stylesheet" />
 
+    {{-- Font Awesome for Icons --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     {{-- Style Assets --}}
     <link rel="stylesheet" href="{{ asset('assets/fonts/icomoon/style.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/fonts/flaticon/font/flaticon.css') }}" />
@@ -45,39 +48,39 @@
 
                     <ul class="js-clone-nav d-none d-lg-inline-block text-start site-menu float-end">
                         <li class="{{ Route::is('main') ? 'active' : '' }}">
-                            <a href="{{ route('main') }}">Home</a>
+                            <a href="{{ route('main') }}"><i class="fas fa-home me-1"></i> Home</a>
                         </li>
-                        <li class="{{ Route::is('properties.index') ? 'active' : '' }}">
-                            <a href="{{ route('properties.index') }}">Properties</a>
+                        <li class="{{ Route::is('properties.index') || Route::is('properties.show') ? 'active' : '' }}">
+                            <a href="{{ route('properties.index') }}"><i class="fas fa-building me-1"></i> Properties</a>
                         </li>
                         @auth
                             <li>
                                 <a href="{{ route('properties.create') }}"
-                                    class="btn btn-primary text-white py-2 px-3">Post Property</a>
+                                    class="btn btn-primary text-white py-2 px-3"><i class="fas fa-plus-circle me-1"></i> Post Property</a>
                             </li>
                         @endauth
 
                         @guest
                             <li class="{{ Route::is('login') ? 'active' : '' }}">
-                                <a href="{{ route('login') }}">Login</a>
+                                <a href="{{ route('login') }}"><i class="fas fa-sign-in-alt me-1"></i> Login</a>
                             </li>
                         @else
                             <li class="has-children">
-                                <a href="#">Hi, {{ Auth::user()->name }}</a>
+                                <a href="#"><i class="fas fa-user-circle me-1"></i> Hi, {{ Auth::user()->name }}</a>
                                 <ul class="dropdown">
-                                    <li><a href="{{ route('users.profile') }}">Profile</a></li>
-                                    <li><a href="{{ route('bidding.list') }}">My Bidding</a></li>
+                                    <li><a href="{{ route('users.profile') }}"><i class="fas fa-user me-2"></i> Profile</a></li>
+                                    <li><a href="{{ route('bidding.list') }}"><i class="fas fa-gavel me-2"></i> My Bidding</a></li>
 
                                     @if (Auth::user()->role != 3)
                                         <li class="border-top mt-2 pt-2">
-                                            <a href="{{ route('backoffice.index') }}" class="text-primary">Backoffice</a>
+                                            <a href="{{ route('backoffice.index') }}" class="text-primary"><i class="fas fa-tachometer-alt me-2"></i> Backoffice</a>
                                         </li>
                                     @endif
 
                                     <li>
                                         <a href="javascript:void(0)"
                                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                            Logout
+                                            <i class="fas fa-sign-out-alt me-2"></i> Logout
                                         </a>
                                         <form id="logout-form" action="{{ route('logout') }}" method="POST"
                                             class="d-none">
@@ -156,7 +159,7 @@
             <div class="row mt-5">
                 <div class="col-12 text-center">
                     <p class="copyright">
-                        Copyright &copy; {{ date('Year') }}. All Rights Reserved. &mdash; Designed by <a
+                        Copyright &copy; {{ date('Y') }}. All Rights Reserved. &mdash; Designed by <a
                             href="https://untree.co">Untree.co</a>
                     </p>
                 </div>

@@ -16,11 +16,36 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Gunakan orderBy
-        $users = User::with('roleData')->orderBy('id', 'ASC')->get();
-        return view('admin.user.index', compact('users'));
+        // Base query
+        $query = User::with('roleData');
+
+        // Apply filters
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('email', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        // Get filtered users
+        $users = $query->orderBy('id', 'ASC')->get();
+
+        // Calculate statistics
+        $stats = [
+            'total_count' => $users->count(),
+            'admin_count' => $users->where('role', 1)->count(),
+            'agent_count' => $users->where('role', 2)->count(),
+            'user_count' => $users->where('role', 3)->count(),
+        ];
+
+        return view('admin.user.index', compact('users', 'stats'));
     }
 
     /**
@@ -286,24 +311,46 @@ class UserController extends Controller
 
     public function adminDashboard()
     {
-        // 1. Statistics
-        $totalUsers = User::where('role', 'user')->count();
-        $totalProperties = Property::count();
-        $totalTransactions = Transaction::count();
+        // 1. User Statistics
+        $totalUsers = User::count();
+        $adminCount = User::where('role', 1)->count();
+        $agentCount = User::where('role', 2)->count();
+        $userCount = User::where('role', 3)->count();
 
-        // 2. Latest Properties (Top 3)
+        // 2. Property Statistics
+        $totalProperties = Property::count();
+        $availableProperties = Property::where('status', '1')->count();
+        $soldProperties = Property::where('status', '0')->count();
+        $totalPropertyValue = Property::sum('price');
+
+        // 3. Transaction Statistics
+        $totalTransactions = Transaction::count();
+        $acceptedTransactions = Transaction::where('status', 'accepted')->count();
+        $leadingTransactions = Transaction::where('status', 'leading')->count();
+        $totalRevenue = Transaction::where('status', 'accepted')->sum('amount');
+
+        // 4. Latest Properties (Top 3)
         $latestProperties = Property::latest()->take(3)->get();
 
-        // 3. New Customers (Latest 3 Users)
-        $newCustomers = User::where('role', 'user')->latest()->take(3)->get();
+        // 5. New Customers (Latest 5 Users)
+        $newCustomers = User::where('role', 3)->latest()->take(5)->get();
 
-        // 4. Recent Transactions (Top 5)
+        // 6. Recent Transactions (Top 5)
         $recentTransactions = Transaction::with(['user', 'property'])->latest()->take(5)->get();
 
         return view('admin.index', compact(
             'totalUsers',
+            'adminCount',
+            'agentCount',
+            'userCount',
             'totalProperties',
+            'availableProperties',
+            'soldProperties',
+            'totalPropertyValue',
             'totalTransactions',
+            'acceptedTransactions',
+            'leadingTransactions',
+            'totalRevenue',
             'latestProperties',
             'newCustomers',
             'recentTransactions'

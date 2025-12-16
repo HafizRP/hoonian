@@ -2,6 +2,106 @@
 
 @section('content')
     <div class="page-inner">
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                    <i class="fas fa-warehouse"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Total Properties</p>
+                                    <h4 class="card-title">{{ $stats['total_count'] }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-success bubble-shadow-small">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Total Value</p>
+                                    <h4 class="card-title">Rp {{ number_format($stats['total_value'], 0, ',', '.') }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-success bubble-shadow-small">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Available</p>
+                                    <h4 class="card-title">{{ $stats['available_count'] }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Sold</p>
+                                    <h4 class="card-title">{{ $stats['sold_count'] }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-warning bubble-shadow-small">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Featured</p>
+                                    <h4 class="card-title">{{ $stats['featured_count'] }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
         <div class="card">
             <div class="card-header">
                 <div class="d-flex align-items-center">
@@ -13,53 +113,74 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header border-0">
-                                <h5 class="modal-title">
-                                    <span class="fw-mediumbold"> New</span>
-                                    <span class="fw-light"> Property </span>
-                                </h5>
-                                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <form id="formAddProperty">
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group form-group-default">
-                                                <label>Property Name</label>
-                                                <input id="addName" type="text" class="form-control"
-                                                    placeholder="fill name" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 pe-0">
-                                            <div class="form-group form-group-default">
-                                                <label>City</label>
-                                                <input id="addCity" type="text" class="form-control"
-                                                    placeholder="fill city" />
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group form-group-default">
-                                                <label>Price</label>
-                                                <input id="addPrice" type="number" class="form-control"
-                                                    placeholder="fill price" />
-                                            </div>
-                                        </div>
+                <!-- Advanced Filters -->
+                <div class="card mb-3" style="background-color: #f8f9fa;">
+                    <div class="card-body">
+                        <form method="GET" action="{{ route('backoffice.properties') }}" id="filterForm">
+                            <div class="row align-items-end">
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="form-label fw-bold">City</label>
+                                        <input type="text" name="city" class="form-control" 
+                                               value="{{ request('city') }}" placeholder="e.g. Jakarta" />
                                     </div>
-                                </form>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="form-label fw-bold">Min Price</label>
+                                        <input type="number" name="min_price" class="form-control" 
+                                               value="{{ request('min_price') }}" placeholder="0" />
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="form-label fw-bold">Max Price</label>
+                                        <input type="number" name="max_price" class="form-control" 
+                                               value="{{ request('max_price') }}" placeholder="999999999" />
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="form-label fw-bold">Owner</label>
+                                        <select name="owner_id" class="form-control">
+                                            <option value="">All Owners</option>
+                                            @foreach($owners as $owner)
+                                                <option value="{{ $owner->id }}" {{ request('owner_id') == $owner->id ? 'selected' : '' }}>
+                                                    {{ $owner->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label class="form-label fw-bold">Type</label>
+                                        <select name="property_type" class="form-control">
+                                            <option value="">All Types</option>
+                                            @foreach($types as $type)
+                                                <option value="{{ $type->id }}" {{ request('property_type') == $type->id ? 'selected' : '' }}>
+                                                    {{ $type->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary btn-block w-100">
+                                            <i class="fa fa-filter"></i> Apply
+                                        </button>
+                                        <a href="{{ route('backoffice.properties') }}" class="btn btn-secondary btn-block w-100 mt-2">
+                                            <i class="fa fa-times"></i> Clear
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="modal-footer border-0">
-                                <button type="button" id="addRowButton" class="btn btn-primary">Add</button>
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
 
+                <!-- DataTable -->
                 <div class="table-responsive">
                     <table id="property-table" class="display table table-striped table-hover" style="opacity: 0;">
                         <thead>
@@ -69,6 +190,7 @@
                                 <th>City</th>
                                 <th>Price</th>
                                 <th>Owner</th>
+                                <th>Status</th>
                                 <th style="width: 10%">Action</th>
                             </tr>
                         </thead>
@@ -78,7 +200,6 @@
                                     <td>
                                         <div class="avatar avatar-sm">
                                             @php
-                                                // Handle potential different structure of pictures
                                                 $pic = 'https://via.placeholder.com/50';
                                                 if ($item->pictures && count($item->pictures) > 0) {
                                                     $pic = asset($item->pictures[0]); 
@@ -89,12 +210,19 @@
                                     </td>
                                     <td>{{ $item->name }}</td>
                                     <td>{{ $item->city }}</td>
-                                    <td>{{ 'Rp ' . number_format($item->price, 0, ',', '.') }}</td>
+                                    <td data-order="{{ $item->price }}">{{ 'Rp ' . number_format($item->price, 0, ',', '.') }}</td>
                                     <td>
                                         @if($item->owner)
                                             <a href="{{ route('users.profile', $item->owner->id) }}">{{ $item->owner->name }}</a>
                                         @else
                                             <span class="text-muted">Unknown</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($item->status == '1')
+                                            <span class="badge badge-success">Available</span>
+                                        @else
+                                            <span class="badge badge-secondary">Sold</span>
                                         @endif
                                     </td>
                                     <td>
@@ -153,65 +281,130 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
 
     <script>
         $(document).ready(function() {
+            // Get current date for filename
+            var today = new Date();
+            var dateStr = today.getFullYear() + '-' + 
+                         String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                         String(today.getDate()).padStart(2, '0');
+            
+            // Get filter info for filename
+            var filterInfo = '';
+            @if(request('city'))
+                filterInfo += '_{{ request("city") }}';
+            @endif
+            @if(request('min_price') || request('max_price'))
+                filterInfo += '_filtered';
+            @endif
 
-            // 1. Inisialisasi DataTable dengan Buttons dan Animasi
+            // Initialize DataTable with enhanced configuration
             var table = $('#property-table').DataTable({
-                "pageLength": 10,
-                dom: 'Bfrtip',
-                buttons: [
+                "pageLength": 25,
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "order": [[ 1, "asc" ]], // Sort by name ascending
+                "responsive": true,
+                "dom": 'Blfrtip',
+                "buttons": [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fa fa-copy"></i> Copy',
+                        className: 'btn btn-info btn-sm',
+                        exportOptions: { 
+                            columns: [1, 2, 3, 4, 5],
+                            format: {
+                                body: function(data, row, column, node) {
+                                    // Remove HTML tags for clean export
+                                    return $(data).text();
+                                }
+                            }
+                        },
+                        title: 'Property List - ' + dateStr
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-file-excel"></i> Excel',
+                        className: 'btn btn-success btn-sm',
+                        exportOptions: { 
+                            columns: [1, 2, 3, 4, 5],
+                            format: {
+                                body: function(data, row, column, node) {
+                                    return $(data).text();
+                                }
+                            }
+                        },
+                        title: 'Property List Report',
+                        filename: 'properties_' + dateStr + filterInfo
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa fa-file-pdf"></i> PDF',
+                        className: 'btn btn-danger btn-sm',
+                        exportOptions: { 
+                            columns: [1, 2, 3, 4, 5],
+                            format: {
+                                body: function(data, row, column, node) {
+                                    return $(data).text();
+                                }
+                            }
+                        },
+                        title: 'Property List Report',
+                        filename: 'properties_' + dateStr + filterInfo,
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        customize: function(doc) {
+                            doc.styles.title = {
+                                fontSize: 16,
+                                bold: true,
+                                alignment: 'center',
+                                margin: [0, 0, 0, 10]
+                            };
+                            doc.content[1].table.widths = ['20%', '15%', '20%', '20%', '15%'];
+                        }
+                    },
                     {
                         extend: 'print',
                         text: '<i class="fa fa-print"></i> Print',
                         className: 'btn btn-secondary btn-sm',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3] // Name, City, Price, Owner
+                        exportOptions: { 
+                            columns: [1, 2, 3, 4, 5],
+                            format: {
+                                body: function(data, row, column, node) {
+                                    return $(data).text();
+                                }
+                            }
                         },
-                        title: 'Property List Report'
+                        title: 'Property List Report - ' + dateStr,
+                        customize: function(win) {
+                            $(win.document.body).css('font-size', '10pt');
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
                     },
                     {
-                        extend: 'excelHtml5',
-                        text: '<i class="fa fa-file-excel"></i> Excel',
-                        className: 'btn btn-success btn-sm',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3]
-                        },
-                        title: 'Property List Report'
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        text: '<i class="fa fa-file-pdf"></i> PDF',
-                        className: 'btn btn-danger btn-sm',
-                        exportOptions: {
-                            columns: [0, 1, 2, 3]
-                        },
-                        title: 'Property List Report'
+                        extend: 'colvis',
+                        text: '<i class="fa fa-columns"></i> Columns',
+                        className: 'btn btn-primary btn-sm'
                     }
                 ],
                 "initComplete": function(settings, json) {
-                    $('#property-table').animate({ opacity: 1 }, 1000);
+                    // Fade in table smoothly
+                    $('#property-table').animate({ opacity: 1 }, 600);
+                    
                     // Move buttons to the header
                     table.buttons().container().appendTo('.card-header .d-flex');
-                    $('.dt-buttons').addClass('ms-2'); // Add margin
-                    $('.dt-button').removeClass('dt-button'); // Remove default class
+                    $('.dt-buttons').addClass('me-2');
+                    
+                    // Remove default DataTables button class for better styling
+                    $('.dt-button').removeClass('dt-button');
                 }
             });
 
-            // 2. SweetAlert untuk Save Edit
-            $('.btn-save-edit').on('click', function() {
-                var id = $(this).data('id');
-                // Form submission logic will be handled normally via HTML form, 
-                // but if keeping SweetAlert, it should trigger form submit
-                $('#editModal' + id).modal('hide');
-            });
-
-            // 3. SweetAlert untuk Delete
-            $('.btn-confirm-delete').on('click', function() {
-                var id = $(this).data('id');
-                // Logic untuk submit form delete (akan diimplementasikan di view)
-            });
+            // Add search placeholder
+            $('div.dataTables_filter input').attr('placeholder', 'Search properties...');
         });
     </script>
 @endsection

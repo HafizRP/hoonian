@@ -33,6 +33,9 @@
     <link rel="stylesheet" href="{{ asset('dashboard/assets/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('dashboard/assets/css/plugins.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('dashboard/assets/css/kaiadmin.min.css') }}" />
+    
+    <!-- DataTables Buttons CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
 
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="{{ asset('dashboard/assets/css/demo.css') }}" />

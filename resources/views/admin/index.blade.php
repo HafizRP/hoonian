@@ -2,20 +2,24 @@
 
 @section('content')
     <div class="page-inner">
+        <!-- Header Section -->
         <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
             <div>
                 <h3 class="fw-bold mb-3">Dashboard Overview</h3>
-                <h6 class="op-7 mb-2">Welcome back, Admin! Here is your business summary.</h6>
+                <h6 class="op-7 mb-2">Welcome back, {{ Auth::user()->name }}! Here is your business summary.</h6>
             </div>
             <div class="ms-md-auto py-2 py-md-0">
-                <a href="#" class="btn btn-label-info btn-round me-2">Generate Report</a>
-                <button class="btn btn-primary btn-round" id="btn-add">
-                    <i class="fa fa-plus me-1"></i> Add Customer
-                </button>
+                <a href="{{ route('backoffice.transactions') }}" class="btn btn-label-info btn-round me-2">
+                    <i class="fa fa-chart-line me-1"></i> View Reports
+                </a>
+                <a href="{{ route('backoffice.properties.create') }}" class="btn btn-primary btn-round">
+                    <i class="fa fa-plus me-1"></i> Add Property
+                </a>
             </div>
         </div>
 
-        <div class="row">
+        <!-- Statistics Cards Row 1 - Main Metrics -->
+        <div class="row mb-3">
             <div class="col-sm-6 col-md-3">
                 <div class="card card-stats card-round">
                     <div class="card-body">
@@ -27,7 +31,7 @@
                             </div>
                             <div class="col col-stats ms-3 ms-sm-0">
                                 <div class="numbers">
-                                    <p class="card-category">Total Visitors</p>
+                                    <p class="card-category">Total Users</p>
                                     <h4 class="card-title">{{ $totalUsers }}</h4>
                                 </div>
                             </div>
@@ -35,47 +39,239 @@
                     </div>
                 </div>
             </div>
-            </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card card-round">
-                    <div class="card-header">
-                        <div class="d-flex align-items-center">
-                            <div class="card-title">Latest Properties</div>
-                            <a href="#" class="btn btn-primary btn-link ms-auto">View All <i class="fa fa-chevron-right ms-1"></i></a>
-                        </div>
-                    </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
                     <div class="card-body">
-                        <div class="row">
-                            @foreach($latestProperties as $p)
-                            <div class="col-md-4 mb-3">
-                                <div class="card card-post card-round shadow-sm border">
-                                    <div class="card-body">
-                                        <div class="info-post">
-                                            <p class="username fw-bold mb-0 text-truncate">{{ $p->name }}</p>
-                                            <p class="small text-muted mb-2"><i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $p->city }}</p>
-                                        </div>
-                                        <div class="separator-solid my-2"></div>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h3 class="card-title fw-bold text-primary" style="font-size: 1.1rem">
-                                                Rp {{ number_format($p->price, 0, ',', '.') }}
-                                            </h3>
-                                            <span class="badge badge-info">{{ $p->property_type }}</span>
-                                        </div>
-                                        <div class="mt-3">
-                                            <a href="{{ route('properties.show', $p->id) }}" class="btn btn-outline-primary btn-sm btn-round btn-detail-prop" target="_blank">Details</a>
-                                        </div>
-                                    </div>
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-info bubble-shadow-small">
+                                    <i class="fas fa-warehouse"></i>
                                 </div>
                             </div>
-                            @endforeach
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Total Properties</p>
+                                    <h4 class="card-title">{{ $totalProperties }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-success bubble-shadow-small">
+                                    <i class="fas fa-receipt"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Total Transactions</p>
+                                    <h4 class="card-title">{{ $totalTransactions }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-warning bubble-shadow-small">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Total Revenue</p>
+                                    <h4 class="card-title">Rp {{ number_format($totalRevenue / 1000000, 1) }}M</h4>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Statistics Cards Row 2 - Detailed Metrics -->
+        <div class="row mb-3">
+            <div class="col-sm-6 col-md-2">
+                <div class="card card-stats card-round">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-danger bubble-shadow-small">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Admins</p>
+                                    <h4 class="card-title">{{ $adminCount }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <div class="card card-stats card-round">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-warning bubble-shadow-small">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Agents</p>
+                                    <h4 class="card-title">{{ $agentCount }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <div class="card card-stats card-round">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-success bubble-shadow-small">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Available</p>
+                                    <h4 class="card-title">{{ $availableProperties }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <div class="card card-stats card-round">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Sold</p>
+                                    <h4 class="card-title">{{ $soldProperties }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <div class="card card-stats card-round">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-success bubble-shadow-small">
+                                    <i class="fas fa-handshake"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Accepted</p>
+                                    <h4 class="card-title">{{ $acceptedTransactions }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-2">
+                <div class="card card-stats card-round">
+                    <div class="card-body p-3">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-warning bubble-shadow-small">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Leading</p>
+                                    <h4 class="card-title">{{ $leadingTransactions }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest Properties Section -->
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="card card-round">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center">
+                            <div class="card-title">Latest Properties</div>
+                            <a href="{{ route('backoffice.properties') }}" class="btn btn-primary btn-sm btn-round ms-auto">
+                                View All <i class="fa fa-chevron-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @forelse($latestProperties as $p)
+                            <div class="col-md-4 mb-3">
+                                <div class="card card-post card-round shadow-sm border h-100">
+                                    <div class="card-body">
+                                        <div class="info-post">
+                                            <p class="username fw-bold mb-0 text-truncate">{{ $p->name }}</p>
+                                            <p class="small text-muted mb-2">
+                                                <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $p->city }}
+                                            </p>
+                                        </div>
+                                        <div class="separator-solid my-2"></div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h3 class="card-title fw-bold text-primary mb-0" style="font-size: 1.1rem">
+                                                Rp {{ number_format($p->price, 0, ',', '.') }}
+                                            </h3>
+                                            <span class="badge {{ $p->status == '1' ? 'badge-success' : 'badge-secondary' }}">
+                                                {{ $p->status == '1' ? 'Available' : 'Sold' }}
+                                            </span>
+                                        </div>
+                                        <div class="mt-3">
+                                            <a href="{{ route('properties.show', $p->id) }}" class="btn btn-outline-primary btn-sm btn-round" target="_blank">
+                                                <i class="fa fa-eye me-1"></i> Details
+                                            </a>
+                                            <a href="{{ route('backoffice.properties.edit', $p->id) }}" class="btn btn-outline-secondary btn-sm btn-round">
+                                                <i class="fa fa-edit me-1"></i> Edit
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @empty
+                            <div class="col-12 text-center py-4">
+                                <p class="text-muted">No properties yet</p>
+                            </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Row: New Customers & Recent Transactions -->
         <div class="row">
             <div class="col-md-4">
                 <div class="card card-round">
@@ -84,7 +280,7 @@
                     </div>
                     <div class="card-body">
                         <div class="card-list py-2">
-                            @foreach ($newCustomers as $c)
+                            @forelse ($newCustomers as $c)
                                 <div class="item-list d-flex align-items-center mb-3">
                                     <div class="avatar">
                                         <img src="{{ $c->profile_img ? asset($c->profile_img) : 'https://via.placeholder.com/50' }}" alt="..." class="avatar-img rounded-circle" />
@@ -94,12 +290,12 @@
                                         <div class="status small text-muted">{{ $c->email }}</div>
                                     </div>
                                     <div class="ms-auto">
-                                        <button class="btn btn-icon btn-link btn-primary btn-email" data-name="{{ $c->name }}">
-                                            <i class="far fa-envelope"></i>
-                                        </button>
+                                        <span class="badge badge-secondary">{{ $c->created_at->diffForHumans() }}</span>
                                     </div>
                                 </div>
-                            @endforeach
+                            @empty
+                                <p class="text-muted text-center">No new customers</p>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -108,7 +304,10 @@
             <div class="col-md-8">
                 <div class="card card-round">
                     <div class="card-header d-flex align-items-center">
-                        <div class="card-title">Transaction History</div>
+                        <div class="card-title">Recent Transactions</div>
+                        <a href="{{ route('backoffice.transactions') }}" class="btn btn-primary btn-sm btn-round ms-auto">
+                            View All <i class="fa fa-chevron-right ms-1"></i>
+                        </a>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -122,7 +321,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($recentTransactions as $t)
+                                    @forelse ($recentTransactions as $t)
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
@@ -136,12 +335,19 @@
                                             <td class="text-end">{{ $t->created_at->format('M d, Y') }}</td>
                                             <td class="text-end fw-bold">Rp {{ number_format($t->amount, 0, ',', '.') }}</td>
                                             <td class="text-end">
-                                                <span class="badge badge-{{ $t->status == 'accepted' ? 'success' : ($t->status == 'rejected' ? 'danger' : 'warning') }}">
-                                                    {{ $t->status }}
+                                                @php
+                                                    $statusClass = $t->status == 'accepted' ? 'success' : ($t->status == 'leading' ? 'warning' : 'secondary');
+                                                @endphp
+                                                <span class="badge badge-{{ $statusClass }}">
+                                                    {{ ucfirst($t->status) }}
                                                 </span>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">No transactions yet</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
                         </div>
@@ -155,70 +361,18 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            // 1. Inisialisasi DataTable
+            // Initialize DataTable for transactions
             $('#dashboard-table').DataTable({
                 "pageLength": 5,
                 "searching": false,
                 "lengthChange": false,
                 "info": false,
+                "ordering": false,
                 "language": {
-                    "paginate": { "next": '<i class="fa fa-chevron-right"></i>', "previous": '<i class="fa fa-chevron-left"></i>' }
-                }
-            });
-
-            // 2. Alert Add Customer
-            $('#btn-add').on('click', function(e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'New Customer',
-                    text: "Open the registration form?",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, Open',
-                    customClass: { confirmButton: 'btn btn-primary', cancelButton: 'btn btn-danger' },
-                    buttonsStyling: false
-                });
-            });
-
-            // 3. Email & Ban Alerts (Delegated)
-            $(document).on('click', '.btn-email', function() {
-                Swal.fire('Info', `Prepare email for ${$(this).data('name')}?`, 'info');
-            });
-
-            $(document).on('click', '.btn-ban', function() {
-                Swal.fire({
-                    title: `Block ${$(this).data('name')}?`,
-                    text: "Action cannot be undone!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Block It!',
-                    confirmButtonColor: '#d33'
-                });
-            });
-
-            // 4. Toast Verify Payment
-            $(document).on('click', '.btn-check-pay', function() {
-                Swal.mixin({
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true
-                }).fire({ icon: 'success', title: 'Payment verified' });
-            });
-
-            // 5. Property Detail Alert
-            $(document).on('click', '.btn-detail-prop', function() {
-                Swal.fire('Property Detail', `Showing details for ${$(this).data('name')}`, 'info');
-            });
-
-            // 6. Wishlist Toggle
-            $(document).on('click', '.btn-wishlist', function() {
-                const icon = $(this).find('i');
-                icon.toggleClass('far fas text-danger');
-                if(icon.hasClass('fas')) {
-                    Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 })
-                    .fire({ icon: 'success', title: 'Added to favorites' });
+                    "paginate": { 
+                        "next": '<i class="fa fa-chevron-right"></i>', 
+                        "previous": '<i class="fa fa-chevron-left"></i>' 
+                    }
                 }
             });
         });

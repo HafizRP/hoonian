@@ -2,22 +2,104 @@
 
 @section('content')
     <div class="page-inner">
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-primary bubble-shadow-small">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Total Users</p>
+                                    <h4 class="card-title">{{ $stats['total_count'] }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-danger bubble-shadow-small">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Admins</p>
+                                    <h4 class="card-title">{{ $stats['admin_count'] }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-warning bubble-shadow-small">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Agents</p>
+                                    <h4 class="card-title">{{ $stats['agent_count'] }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="card card-stats card-round">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-icon">
+                                <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            </div>
+                            <div class="col col-stats ms-3 ms-sm-0">
+                                <div class="numbers">
+                                    <p class="card-category">Regular Users</p>
+                                    <h4 class="card-title">{{ $stats['user_count'] }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
         <div class="card">
             <div class="card-header">
                 <div class="d-flex align-items-center">
                     <h4 class="card-title">Users List</h4>
                     <button class="btn btn-primary btn-round ms-auto" data-bs-toggle="modal" data-bs-target="#addRowModal">
                         <i class="fa fa-plus"></i>
-                        Add Row
+                        Add User
                     </button>
                 </div>
             </div>
             <div class="card-body">
+                <!-- Add User Modal -->
                 <div class="modal fade" id="addRowModal" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
                             <div class="modal-header border-0">
-                                <h5 class="modal-title"><span class="fw-mediumbold">New</span> Row</h5>
+                                <h5 class="modal-title"><span class="fw-mediumbold">New</span> User</h5>
                                 <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
@@ -49,6 +131,7 @@
                                                 <label>Role</label>
                                                 <select class="form-control" name="role">
                                                     <option value="1">ADMIN</option>
+                                                    <option value="2">AGENT</option>
                                                     <option value="3" selected>USER</option>
                                                 </select>
                                             </div>
@@ -56,7 +139,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer border-0">
-                                    <button type="submit" id="addRowButton" class="btn btn-primary">Add</button>
+                                    <button type="submit" class="btn btn-primary">Add</button>
                                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                                 </div>
                             </form>
@@ -64,6 +147,45 @@
                     </div>
                 </div>
 
+                <!-- Advanced Filters -->
+                <div class="card mb-3" style="background-color: #f8f9fa;">
+                    <div class="card-body">
+                        <form method="GET" action="{{ route('backoffice.users') }}" id="filterForm">
+                            <div class="row align-items-end">
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <label class="form-label fw-bold">Search</label>
+                                        <input type="text" name="search" class="form-control" 
+                                               value="{{ request('search') }}" placeholder="Search by name or email..." />
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label fw-bold">Role</label>
+                                        <select name="role" class="form-control">
+                                            <option value="">All Roles</option>
+                                            <option value="1" {{ request('role') == '1' ? 'selected' : '' }}>Admin</option>
+                                            <option value="2" {{ request('role') == '2' ? 'selected' : '' }}>Agent</option>
+                                            <option value="3" {{ request('role') == '3' ? 'selected' : '' }}>User</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary btn-block w-100">
+                                            <i class="fa fa-filter"></i> Apply Filters
+                                        </button>
+                                        <a href="{{ route('backoffice.users') }}" class="btn btn-secondary btn-block w-100 mt-2">
+                                            <i class="fa fa-times"></i> Clear
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- DataTable -->
                 <div class="table-responsive">
                     <table id="add-row" class="display table table-striped table-hover" style="opacity: 0;">
                         <thead>
@@ -89,7 +211,10 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge badge-{{ $user->role == 1 || $user->role == 'admin' ? 'danger' : 'secondary' }}">
+                                        @php
+                                            $roleClass = $user->role == 1 ? 'badge-danger' : ($user->role == 2 ? 'badge-warning' : 'badge-secondary');
+                                        @endphp
+                                        <span class="badge {{ $roleClass }}">
                                             {{ $user->roleData->name ?? 'User' }}
                                         </span>
                                     </td>
@@ -197,96 +322,130 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
 
     <script>
-        jQuery(document).ready(function($) {
-            // 1. Init Datatable
+        $(document).ready(function() {
+            // Get current date for filename
+            var today = new Date();
+            var dateStr = today.getFullYear() + '-' + 
+                         String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                         String(today.getDate()).padStart(2, '0');
+            
+            // Get filter info for filename
+            var filterInfo = '';
+            @if(request('role'))
+                filterInfo += '_role{{ request("role") }}';
+            @endif
+            @if(request('search'))
+                filterInfo += '_filtered';
+            @endif
+
+            // Initialize DataTable with enhanced configuration
             var table = $('#add-row').DataTable({
-                "pageLength": 5,
-                dom: 'Bfrtip',
-                buttons: [
+                "pageLength": 25,
+                "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                "order": [[ 2, "desc" ]], // Sort by joined date descending (newest first)
+                "responsive": true,
+                "dom": 'Blfrtip',
+                "buttons": [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fa fa-copy"></i> Copy',
+                        className: 'btn btn-info btn-sm',
+                        exportOptions: { 
+                            columns: [0, 1, 2],
+                            format: {
+                                body: function(data, row, column, node) {
+                                    // Remove HTML tags for clean export
+                                    return $(data).text();
+                                }
+                            }
+                        },
+                        title: 'User List - ' + dateStr
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fa fa-file-excel"></i> Excel',
+                        className: 'btn btn-success btn-sm',
+                        exportOptions: { 
+                            columns: [0, 1, 2],
+                            format: {
+                                body: function(data, row, column, node) {
+                                    return $(data).text();
+                                }
+                            }
+                        },
+                        title: 'User List Report',
+                        filename: 'users_' + dateStr + filterInfo
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fa fa-file-pdf"></i> PDF',
+                        className: 'btn btn-danger btn-sm',
+                        exportOptions: { 
+                            columns: [0, 1, 2],
+                            format: {
+                                body: function(data, row, column, node) {
+                                    return $(data).text();
+                                }
+                            }
+                        },
+                        title: 'User List Report',
+                        filename: 'users_' + dateStr + filterInfo,
+                        orientation: 'portrait',
+                        pageSize: 'A4',
+                        customize: function(doc) {
+                            doc.styles.title = {
+                                fontSize: 16,
+                                bold: true,
+                                alignment: 'center',
+                                margin: [0, 0, 0, 10]
+                            };
+                            doc.content[1].table.widths = ['50%', '25%', '25%'];
+                        }
+                    },
                     {
                         extend: 'print',
-                        text: '<i class="fa fa-print"></i> Print Report',
+                        text: '<i class="fa fa-print"></i> Print',
                         className: 'btn btn-secondary btn-sm',
-                        exportOptions: {
-                            columns: [0, 1, 2] // Index columns to export (User, Role, Joined)
+                        exportOptions: { 
+                            columns: [0, 1, 2],
+                            format: {
+                                body: function(data, row, column, node) {
+                                    return $(data).text();
+                                }
+                            }
                         },
-                        title: 'User List Report'
+                        title: 'User List Report - ' + dateStr,
+                        customize: function(win) {
+                            $(win.document.body).css('font-size', '10pt');
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
                     },
                     {
-                        extend: 'excelHtml5',
-                        text: '<i class="fa fa-file-excel"></i> Export Excel',
-                        className: 'btn btn-success btn-sm',
-                        exportOptions: {
-                            columns: [0, 1, 2]
-                        },
-                        title: 'User List Report'
-                    },
-                    {
-                        extend: 'pdfHtml5',
-                        text: '<i class="fa fa-file-pdf"></i> Export PDF',
-                        className: 'btn btn-danger btn-sm',
-                        exportOptions: {
-                            columns: [0, 1, 2]
-                        },
-                        title: 'User List Report'
+                        extend: 'colvis',
+                        text: '<i class="fa fa-columns"></i> Columns',
+                        className: 'btn btn-primary btn-sm'
                     }
                 ],
                 "initComplete": function(settings, json) {
-                    $('#add-row').animate({ opacity: 1 }, 1000);
+                    // Fade in table smoothly
+                    $('#add-row').animate({ opacity: 1 }, 600);
+                    
                     // Move buttons to the header
                     table.buttons().container().appendTo('.card-header .d-flex');
-                    $('.dt-buttons').addClass('ms-2'); // Add margin
-                    $('.dt-button').removeClass('dt-button'); // Remove default class
+                    $('.dt-buttons').addClass('me-2');
+                    
+                    // Remove default DataTables button class for better styling
+                    $('.dt-button').removeClass('dt-button');
                 }
             });
 
-            // 2. Aksi Confirm Delete (SweetAlert)
-            $('.btn-confirm-delete').click(function() {
-                var userId = $(this).data('id');
-                var userName = $(this).data('name');
-
-                // Tutup modal dulu baru munculkan SweetAlert
-                $('#deleteModal' + userId).modal('hide');
-
-                swal({
-                    title: "Terhapus!",
-                    text: "User " + userName + " telah berhasil dihapus.",
-                    icon: "success",
-                    buttons: {
-                        confirm: {
-                            className: 'btn btn-success'
-                        }
-                    }
-                });
-            });
-
-            // 3. Aksi Save Edit (SweetAlert)
-            $('.btn-save-edit').click(function() {
-                var userId = $(this).data('id');
-                $('#editModal' + userId).modal('hide');
-
-                swal({
-                    title: "Berhasil!",
-                    text: "Data user telah diperbarui.",
-                    icon: "success",
-                    buttons: {
-                        confirm: {
-                            className: 'btn btn-success'
-                        }
-                    }
-                });
-            });
-
-            // 4. Tombol Add Row
-            $('#addRowButton').click(function() {
-                var name = $('#addName').val();
-                if (name !== "") {
-                    $('#addRowModal').modal('hide');
-                    swal("Berhasil!", "User " + name + " ditambahkan.", "success");
-                }
-            });
+            // Add search placeholder
+            $('div.dataTables_filter input').attr('placeholder', 'Search users...');
         });
     </script>
 @endsection

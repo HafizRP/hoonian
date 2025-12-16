@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Models\PropertyGallery;
 use App\Models\PropertyType;
 use App\Models\Review;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -152,7 +153,15 @@ class PropertyController extends Controller
                 $q->where('owner_id', $property->owner->id);
             })->limit(15)->get();
 
-        return view('property.detail', compact('property', 'reviews'));
+        // Check if current user has already bid on this property
+        $userHasBid = false;
+        if (auth()->check()) {
+            $userHasBid = Transaction::where('property_id', $id)
+                ->where('user_id', auth()->id())
+                ->exists();
+        }
+
+        return view('property.detail', compact('property', 'reviews', 'userHasBid'));
     }
 
     /**
@@ -263,10 +272,49 @@ class PropertyController extends Controller
         return view('index', compact('popular_properties', 'top_agents'));
     }
 
-    public function properties()
+    public function properties(Request $request)
     {
-        $properties = Property::with(['owner'])->paginate(10);
-        return view('admin.property.index', compact('properties'));
+        // Base query
+        $query = Property::with(['owner']);
+
+        // Apply filters
+        if ($request->filled('city')) {
+            $query->where('city', 'LIKE', '%' . $request->city . '%');
+        }
+
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        if ($request->filled('owner_id')) {
+            $query->where('owner_id', $request->owner_id);
+        }
+
+        if ($request->filled('property_type')) {
+            $query->where('property_type', $request->property_type);
+        }
+
+        // Get filtered properties
+        $properties = $query->get();
+
+        // Calculate statistics
+        $stats = [
+            'total_count' => $properties->count(),
+            'total_value' => $properties->sum('price'),
+            'available_count' => $properties->where('status', '1')->count(),
+            'sold_count' => $properties->where('status', '0')->count(),
+            'featured_count' => $properties->where('featured', true)->count(),
+        ];
+
+        // Get all owners and types for filter dropdowns
+        $owners = User::whereIn('role', [1, 2])->get(); // Admin and Agents
+        $types = PropertyType::all();
+
+        return view('admin.property.index', compact('properties', 'stats', 'owners', 'types'));
     }
 
     public function backofficeCreate()

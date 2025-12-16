@@ -7,7 +7,7 @@
         <div class="container">
             <div class="row justify-content-center align-items-center">
                 <div class="col-lg-9 text-center">
-                    <h1 class="heading" data-aos="fade-up">My Bidding List</h1>
+                    <h1 class="heading" data-aos="fade-up"><i class="fas fa-gavel me-3"></i> My Bidding List</h1>
                     <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="200">
                         <ol class="breadcrumb justify-content-center">
                             <li class="breadcrumb-item"><a href="{{ route('main') }}">Home</a></li>
@@ -21,37 +21,87 @@
 
     <div class="section">
         <div class="container">
+            {{-- Summary Statistics Cards --}}
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-2">
+                                <i class="fas fa-inbox fa-2x text-primary"></i>
+                            </div>
+                            <h3 class="mb-0">{{ $sellingBids->count() }}</h3>
+                            <p class="text-muted mb-0 small">Offers Received</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-2">
+                                <i class="fas fa-paper-plane fa-2x text-success"></i>
+                            </div>
+                            <h3 class="mb-0">{{ $buyingBids->count() }}</h3>
+                            <p class="text-muted mb-0 small">Bids Placed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-2">
+                                <i class="fas fa-trophy fa-2x text-warning"></i>
+                            </div>
+                            <h3 class="mb-0">{{ $sellingBids->where('status', 'leading')->count() + $buyingBids->where('status', 'leading')->count() }}</h3>
+                            <p class="text-muted mb-0 small">Leading Bids</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-2">
+                                <i class="fas fa-check-circle fa-2x text-info"></i>
+                            </div>
+                            <h3 class="mb-0">{{ $sellingBids->where('status', 'accepted')->count() + $buyingBids->where('status', 'accepted')->count() }}</h3>
+                            <p class="text-muted mb-0 small">Accepted</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {{-- Tabs Navigation --}}
             <ul class="nav nav-pills mb-4 justify-content-center fs-5" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="pills-selling-tab" data-bs-toggle="pill" data-bs-target="#pills-selling" type="button" role="tab" aria-controls="pills-selling" aria-selected="true">
-                        <i class="icon-home me-2"></i> Offers on My Properties
+                        <i class="fas fa-home me-2"></i> Offers on My Properties
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="pills-buying-tab" data-bs-toggle="pill" data-bs-target="#pills-buying" type="button" role="tab" aria-controls="pills-buying" aria-selected="false">
-                        <i class="icon-shopping-cart me-2"></i> My Bids
+                        <i class="fas fa-shopping-cart me-2"></i> My Bids
                     </button>
                 </li>
             </ul>
 
             {{-- Filter Form (Applies to both) --}}
-            <form action="{{ route('bidding.list') }}" method="GET" class="mb-5 p-4 bg-light rounded">
-                <div class="row g-3">
+            <form action="{{ route('bidding.list') }}" method="GET" class="mb-5 p-4 bg-light rounded shadow-sm">
+                <div class="row g-3 align-items-end">
                     <div class="col-md-3">
-                        <h5 class="mt-2 text-primary">Filter Bids</h5>
+                        <h5 class="text-primary mb-0"><i class="fas fa-filter me-2"></i> Filter Bids</h5>
                     </div>
                     <div class="col-md-3">
+                        <label class="form-label fw-bold small">Property</label>
                         <select name="property_id" id="property_id" class="form-control form-select">
                             <option value="">All Properties</option>
                             @foreach ($properties as $property)
                                 <option value="{{ $property->id }}" {{ request('property_id') == $property->id ? 'selected' : '' }}>
-                                    {{ $property->title }} ({{ $property->name }})
+                                    {{ $property->name }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-3">
+                        <label class="form-label fw-bold small">Status</label>
                         <select name="status" id="status" class="form-control form-select">
                             <option value="">All Status</option>
                             <option value="leading" {{ request('status') == 'leading' ? 'selected' : '' }}>Leading</option>
@@ -60,7 +110,7 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+                        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-2"></i> Apply Filter</button>
                     </div>
                 </div>
             </form>
@@ -69,8 +119,6 @@
                 {{-- TAB 1: Selling (Incoming Bids) --}}
                 <div class="tab-pane fade show active" id="pills-selling" role="tabpanel" aria-labelledby="pills-selling-tab">
                     
-                    {{-- Filter Form Removed from here --}}
-
                     <div class="table-responsive custom-table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -94,21 +142,23 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <a href="{{ route('properties.show', $bid->property->id) }}" target="_blank" class="fw-bold text-dark">{{ $bid->property->name }}</a>
-                                            <span class="d-block text-muted small">{{ $bid->property->city }}</span>
+                                            <a href="{{ route('properties.show', $bid->property->id) }}" target="_blank" class="fw-bold text-dark">
+                                                <i class="fas fa-external-link-alt me-1 small"></i> {{ $bid->property->name }}
+                                            </a>
+                                            <span class="d-block text-muted small"><i class="fas fa-map-marker-alt me-1"></i> {{ $bid->property->city }}</span>
                                         </td>
                                         <td>
-                                            <div class="fw-bold">{{ $bid->user->name }}</div>
+                                            <div class="fw-bold"><i class="fas fa-user me-1"></i> {{ $bid->user->name }}</div>
                                             <small class="text-muted">{{ $bid->user->email }}</small>
                                         </td>
-                                        <td>{{ 'Rp ' . number_format($bid->amount, 0, ',', '.') }}</td>
+                                        <td class="fw-bold text-success">{{ 'Rp ' . number_format($bid->amount, 0, ',', '.') }}</td>
                                         <td class="text-center">
                                             @if ($bid->status == 'leading')
-                                                <span class="badge bg-success">Leading</span>
+                                                <span class="badge bg-success"><i class="fas fa-trophy me-1"></i> Leading</span>
                                             @elseif($bid->status == 'outbid')
-                                                <span class="badge bg-warning text-dark">Outbid</span>
+                                                <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i> Outbid</span>
                                             @elseif($bid->status == 'accepted')
-                                                <span class="badge bg-primary">Accepted</span>
+                                                <span class="badge bg-primary"><i class="fas fa-check-circle me-1"></i> Accepted</span>
                                             @else
                                                 <span class="badge bg-danger">{{ ucfirst($bid->status) }}</span>
                                             @endif
@@ -121,7 +171,7 @@
                                                         @method('PATCH')
                                                         <button type="submit" class="btn btn-success btn-sm"
                                                             onclick="return confirm('Accept this offer?')">
-                                                            Accept
+                                                            <i class="fas fa-check me-1"></i> Accept
                                                         </button>
                                                     </form>
                                                     <form action="{{ route('bidding.decline', $bid->id) }}" method="POST">
@@ -129,19 +179,19 @@
                                                         @method('PATCH')
                                                         <button type="submit" class="btn btn-danger btn-sm"
                                                             onclick="return confirm('Decline this offer?')">
-                                                            Decline
+                                                            <i class="fas fa-times me-1"></i> Decline
                                                         </button>
                                                     </form>
                                                 </div>
                                             @else
-                                                <span class="text-muted small">Completed</span>
+                                                <span class="text-muted small"><i class="fas fa-check-double me-1"></i> Completed</span>
                                             @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
                                         <td colspan="6" class="text-center py-5">
-                                            <i class="icon-inbox fs-1 text-muted mb-3"></i>
+                                            <i class="fas fa-inbox fa-3x text-muted mb-3 d-block"></i>
                                             <p class="text-black-50">No incoming offers on your properties yet.</p>
                                         </td>
                                     </tr>
@@ -176,35 +226,39 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <a href="{{ route('properties.show', $bid->property->id) }}" target="_blank" class="fw-bold text-dark">{{ $bid->property->name }}</a>
-                                            <span class="d-block text-muted small">{{ $bid->property->city }}</span>
+                                            <a href="{{ route('properties.show', $bid->property->id) }}" target="_blank" class="fw-bold text-dark">
+                                                <i class="fas fa-external-link-alt me-1 small"></i> {{ $bid->property->name }}
+                                            </a>
+                                            <span class="d-block text-muted small"><i class="fas fa-map-marker-alt me-1"></i> {{ $bid->property->city }}</span>
                                         </td>
                                         <td>
-                                            <div class="fw-bold">{{ $bid->property->owner->name ?? 'Unknown' }}</div>
+                                            <div class="fw-bold"><i class="fas fa-user-tie me-1"></i> {{ $bid->property->owner->name ?? 'Unknown' }}</div>
                                             <small class="text-muted">Owner</small>
                                         </td>
-                                        <td>{{ 'Rp ' . number_format($bid->amount, 0, ',', '.') }}</td>
+                                        <td class="fw-bold text-success">{{ 'Rp ' . number_format($bid->amount, 0, ',', '.') }}</td>
                                         <td class="text-center">
                                             @if ($bid->status == 'leading')
-                                                <span class="badge bg-success">Leading</span>
+                                                <span class="badge bg-success"><i class="fas fa-trophy me-1"></i> Leading</span>
                                             @elseif($bid->status == 'outbid')
-                                                <span class="badge bg-warning text-dark">Outbid</span>
+                                                <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i> Outbid</span>
                                             @elseif($bid->status == 'accepted')
-                                                <span class="badge bg-primary">Accepted</span>
+                                                <span class="badge bg-primary"><i class="fas fa-check-circle me-1"></i> Accepted</span>
                                             @else
                                                 <span class="badge bg-secondary">{{ ucfirst($bid->status) }}</span>
                                             @endif
                                         </td>
                                         <td class="text-center text-muted">
-                                            {{ $bid->created_at->format('d M Y') }}
+                                            <i class="fas fa-calendar-alt me-1"></i> {{ $bid->created_at->format('d M Y') }}
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
                                         <td colspan="6" class="text-center py-5">
-                                            <i class="icon-shopping-bag fs-1 text-muted mb-3"></i>
+                                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3 d-block"></i>
                                             <p class="text-black-50">You haven't placed any bids yet.</p>
-                                            <a href="{{ route('properties.index') }}" class="btn btn-primary mt-2">Browse Properties</a>
+                                            <a href="{{ route('properties.index') }}" class="btn btn-primary mt-2">
+                                                <i class="fas fa-search me-2"></i> Browse Properties
+                                            </a>
                                         </td>
                                     </tr>
                                 @endforelse

@@ -125,10 +125,42 @@ class TransactionController extends Controller
         return back()->with('info', 'Bid telah ditolak.');
     }
 
-    public function backofficeList() {
-    $transactions = Transaction::with(['property', 'user'])->orderBy('created_at', 'desc')->get();
-    $properties = Property::all();
+    public function backofficeList(Request $request) {
+        // Base query
+        $query = Transaction::with(['property', 'user']);
 
-    return view('admin.transaction.index', compact('transactions', 'properties'));
-}
+        // Apply filters
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('property_id')) {
+            $query->where('property_id', $request->property_id);
+        }
+
+        // Get filtered transactions
+        $transactions = $query->orderBy('created_at', 'desc')->get();
+
+        // Calculate statistics
+        $stats = [
+            'total_count' => $transactions->count(),
+            'total_revenue' => $transactions->where('status', 'accepted')->sum('amount'),
+            'success_count' => $transactions->where('status', 'accepted')->count(),
+            'pending_count' => $transactions->where('status', 'leading')->count(),
+            'failed_count' => $transactions->where('status', 'outbid')->count(),
+        ];
+
+        // Get all properties for filter dropdown
+        $properties = Property::all();
+
+        return view('admin.transaction.index', compact('transactions', 'properties', 'stats'));
+    }
 }
