@@ -24,6 +24,15 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www
 
+# Remove user and group from php-fpm config to allow running as non-root
+RUN sed -i 's/^\(user\|group\) =/;\1 =/g' /usr/local/etc/php-fpm.d/www.conf
+
+# Copy composer files
+COPY composer.json composer.lock ./
+
+# Install Composer dependencies
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
 # Copy existing application directory contents
 COPY . /var/www
 
