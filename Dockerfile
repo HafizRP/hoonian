@@ -11,24 +11,13 @@ RUN apt-get update && apt-get install -y \
     unzip \
     nodejs \
     npm \
-    libzip-dev \
-    nginx \
-    supervisor
+    libzip-dev
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
-
-# Remove default server definition
-RUN rm /etc/nginx/sites-enabled/default
-
-# Copy nginx config
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
-
-# Copy supervisor config
-COPY docker/supervisord.conf /etc/supervisord.conf
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -54,8 +43,6 @@ COPY --chown=www-data:www-data . /var/www
 # Change current user to www
 USER www-data
 
-# Expose port 80
-EXPOSE 80
-
-# Start supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]
