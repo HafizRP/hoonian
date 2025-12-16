@@ -30,8 +30,8 @@ WORKDIR /var/www
 # Copy composer files first for better layer caching
 COPY composer.json composer.lock ./
 
-# Install Composer dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
+# Install Composer dependencies (including dev dependencies for Laravel's default providers)
+RUN composer install --no-interaction --optimize-autoloader --no-scripts
 
 # Copy application files
 COPY . /var/www
