@@ -21,41 +21,46 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Remove default server definition
-RUN rm /etc/nginx/sites-enabled/default
-
-# Copy nginx config
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
-
-# Copy supervisor config
-COPY docker/supervisord.conf /etc/supervisord.conf
-
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www
 
-# Remove user and group from php-fpm config to allow running as non-root
-RUN sed -i 's/^\(user\|group\) =/;\1 =/g' /usr/local/etc/php-fpm.d/www.conf
-
-# Copy composer files
+# Copy composer files first for better layer caching
 COPY composer.json composer.lock ./
 
 # Install Composer dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
 
-# Copy existing application directory contents
+# Copy application files
 COPY . /var/www
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
+# Copy nginx config
+COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# Change current user to www
-USER www-data
+# Remove default nginx site
+RUN rm -f /etc/nginx/sites-enabled/default
+
+# Copy supervisor config
+COPY docker/supervisord.conf /etc/supervisord.conf
+
+# Copy and set permissions for entrypoint script
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Create necessary directories and set base permissions
+RUN mkdir -p /var/www/storage/logs \
+    /var/www/storage/framework/sessions \
+    /var/www/storage/framework/views \
+    /var/www/storage/framework/cache \
+    /var/www/bootstrap/cache
+
+# Set ownership for www-data (PHP-FPM will run as www-data)
+RUN chown -R www-data:www-data /var/www
 
 # Expose port 80
 EXPOSE 80
 
-# Start supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+# Use entrypoint script to handle Laravel setup and start services
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
