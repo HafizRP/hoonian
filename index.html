@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Path Board Game | HTML/Bootstrap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .board-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            /* 5 Kolom */
+            grid-template-rows: repeat(4, 1fr);
+            /* 4 Baris */
+            gap: 5px;
+            border: 4px solid #4a148c;
+            /* Warna Ungu Karir */
+            background-color: #f3e5f5;
+            /* Background sangat terang */
+            min-height: 450px;
+        }
+
+        .tile {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ce93d8;
+            /* Border ungu muda */
+            background-color: #ffffff;
+            font-size: 0.85rem;
+            text-align: center;
+            position: relative;
+            padding: 5px;
+            transition: all 0.3s;
+        }
+
+        .tile-start {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+        }
+
+        .tile-target {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+
+        .tile-skill {
+            background-color: #ffc107;
+        }
+
+        /* Kuning Skill */
+        .tile-internship {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        /* Biru Internship */
+        .tile-interview {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* Merah Interview */
+
+        .player-piece {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 3px solid white;
+            font-size: 0.8rem;
+            color: white;
+            line-height: 18px;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        #player-piece {
+            background-color: #880e4f;
+            top: 5px;
+            left: 5px;
+        }
+
+        /* Ungu Gelap */
+
+        .status-panel {
+            border: 2px solid #ce93d8;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container game-container">
+        <h1 class="text-center mb-4 text-primary">Career Path: The Board Game</h1>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="board-grid p-3" id="game-board">
+                    <div class="tile tile-start">START<div id="player-piece" class="player-piece">S1</div>
+                    </div>
+                    <div class="tile tile-skill">Skill: Logic</div>
+                    <div class="tile tile-internship">Portfolio Draft</div>
+                    <div class="tile tile-skill">Skill: Comm.</div>
+                    <div class="tile tile-interview">Event: Rapat</div>
+
+                    <div class="tile">Semester 2</div>
+                    <div class="tile tile-skill">Skill: Tech A</div>
+                    <div class="tile tile-interview">Interview 1</div>
+                    <div class="tile tile-skill">Skill: Tech B</div>
+                    <div class="tile tile-internship">Internship Search</div>
+
+                    <div class="tile">Semester 3</div>
+                    <div class="tile tile-interview">Event Card</div>
+                    <div class="tile tile-skill">Skill: Leadership</div>
+                    <div class="tile tile-internship">Portfolio Project 1</div>
+                    <div class="tile tile-skill">Skill: Design</div>
+
+                    <div class="tile">Semester 4</div>
+                    <div class="tile tile-interview">Interview Final</div>
+                    <div class="tile tile-skill">Skill: Final</div>
+                    <div class="tile tile-internship">Final Portfolio</div>
+                    <div class="tile tile-target">JOB ROLE TARGET</div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card status-panel shadow mb-3">
+                    <div class="card-header bg-primary text-white text-center fw-bold">
+                        Status Petualang
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-1 small">Posisi Sekarang: <span id="current-pos" class="fw-bold">1 (START)</span>
+                        </p>
+                        <p class="mb-1 small">Progress (Minggu): <span id="progress-week" class="fw-bold">0</span></p>
+                        <p class="mb-1 small">Skill Points: <span id="skill-points"
+                                class="fw-bold text-warning">10</span></p>
+                        <p class="mb-0 small">Resource: <span id="resource-count"
+                                class="fw-bold text-success">$500</span></p>
+                    </div>
+                </div>
+
+                <div class="card status-panel shadow mb-3">
+                    <div class="card-header bg-secondary text-white text-center fw-bold">
+                        Aksi & Dadu
+                    </div>
+                    <div class="card-body text-center">
+                        <h2 class="mb-3">Dadu: <span id="dice-result" class="text-danger">?</span></h2>
+                        <button id="roll-dice-btn" class="btn btn-lg btn-success w-100">Lempar Dadu (1 Bulan
+                            Progres)</button>
+                        <div id="action-message" class="mt-3 text-muted small">Tekan tombol untuk bergerak maju di Papan
+                            Karir.</div>
+                    </div>
+                </div>
+
+                <div class="card status-panel shadow">
+                    <div class="card-header bg-danger text-white fw-bold">Event Cards</div>
+                    <div class="card-body">
+                        <p class="small mb-0" id="event-log">Log kejadian akan muncul di sini.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SCRIPT JAVASCRIPT DASAR UNTUK DEMO PERGERAKAN DADU
+        const rollDiceBtn = document.getElementById('roll-dice-btn');
+        const diceResultDisplay = document.getElementById('dice-result');
+        const actionMessage = document.getElementById('action-message');
+        const eventLog = document.getElementById('event-log');
+        const currentPosDisplay = document.getElementById('current-pos');
+        const progressWeekDisplay = document.getElementById('progress-week');
+
+        const boardTiles = document.querySelectorAll('.tile');
+        const totalTiles = boardTiles.length;
+        let playerPosition = 0; // Posisi awal (index 0)
+        let progressWeek = 0;
+
+        // Fungsi untuk mendapatkan petak (tile) berdasarkan index
+        function getTile(index) {
+            return boardTiles[Math.min(index, totalTiles - 1)];
+        }
+
+        // Fungsi untuk memindahkan piece pemain
+        function movePiece(steps) {
+            const pieceElement = document.getElementById('player-piece');
+
+            // 1. Hapus piece dari posisi lama
+            const oldTile = getTile(playerPosition);
+            if (pieceElement.parentNode === oldTile) {
+                oldTile.removeChild(pieceElement);
+            }
+
+            // 2. Hitung posisi baru
+            playerPosition += steps;
+
+            // Update waktu progres
+            progressWeek += 4; // Asumsi 1 lemparan = 4 minggu (1 bulan)
+
+            // Cek jika mencapai target
+            if (playerPosition >= totalTiles - 1) {
+                playerPosition = totalTiles - 1;
+                actionMessage.textContent = `Selamat! Anda mencapai TARGET KARIR! Skor akhir: ${progressWeek} Minggu`;
+                rollDiceBtn.disabled = true;
+                eventLog.textContent = `Pencapaian: ${boardTiles[playerPosition].textContent.trim()}!`;
+            } else {
+                actionMessage.textContent = `Anda bergerak ${steps} petak. Posisi baru: ${playerPosition + 1}`;
+            }
+
+            // 3. Pindahkan piece ke petak baru
+            const newTile = getTile(playerPosition);
+            newTile.appendChild(pieceElement);
+
+            // 4. Memicu Event (Simulasi)
+            const tileType = newTile.classList.contains('tile-skill') ? 'Skill' :
+                newTile.classList.contains('tile-internship') ? 'Internship' :
+                    newTile.classList.contains('tile-interview') ? 'Challenge' : 'Regular';
+
+            eventLog.textContent = `Anda mendarat di petak: [${tileType}]. Memicu event ${newTile.textContent.trim()}!`;
+
+            // Update display status
+            currentPosDisplay.textContent = `${playerPosition + 1} (${newTile.textContent.trim()})`;
+            progressWeekDisplay.textContent = progressWeek;
+        }
+
+        // Event Listener untuk Lempar Dadu
+        rollDiceBtn.addEventListener('click', () => {
+            // Dadu 1-4 (untuk progress bulanan yang lebih terkontrol)
+            const diceRoll = Math.floor(Math.random() * 4) + 1;
+            diceResultDisplay.textContent = diceRoll;
+
+            // Pindahkan piece pemain
+            movePiece(diceRoll);
+        });
+
+        // Inisialisasi: Pindahkan piece ke petak 0 saat inisialisasi
+        document.getElementById('game-board').children[0].appendChild(document.getElementById('player-piece'));
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

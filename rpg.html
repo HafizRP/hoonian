@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Quest | RPG Career UI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="crossorigin">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Umum Bertema Gelap (Dark Mode RPG) */
+        body {
+            background-color: #1a1a1a;
+            color: #ccc;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .rpg-panel {
+            background-color: #2c2c2c;
+            border: 3px solid #555;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+
+        /* Font RPG (Opsional, untuk Judul) */
+        .rpg-font {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            color: #ffc107;
+            /* Emas */
+            text-shadow: 2px 2px #000;
+        }
+
+        /* Stats Bar / Progress Bar (EXP) */
+        .exp-bar {
+            height: 20px;
+            background-color: #555;
+            border: 1px solid #333;
+            margin-top: 5px;
+        }
+
+        .exp-fill {
+            height: 100%;
+            background-color: #28a745;
+            /* Hijau EXP */
+            transition: width 0.3s;
+            text-align: center;
+            color: white;
+            font-size: 0.8rem;
+            line-height: 18px;
+        }
+
+        /* Quest Log */
+        .quest-item {
+            border-bottom: 1px solid #444;
+            padding: 8px 0;
+        }
+
+        .quest-completed {
+            color: #28a745;
+            /* Hijau check */
+            text-decoration: line-through;
+        }
+
+        .quest-active {
+            color: #ffc107;
+            /* Kuning active */
+            font-weight: bold;
+        }
+
+        /* World Map Styling */
+        .world-map {
+            background-color: #383838;
+            min-height: 250px;
+            border: 1px dashed #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .map-node {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #007bff;
+            border: 4px solid #fff;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .node-active {
+            background-color: #dc3545;
+            /* Merah lokasi saat ini */
+            box-shadow: 0 0 15px #dc3545;
+        }
+
+        .map-connector {
+            flex-grow: 1;
+            height: 2px;
+            background-color: #666;
+            margin: 0 -10px;
+            /* Menghubungkan node */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container game-container">
+        <div class="text-center mb-4">
+            <span class="rpg-font">Career Quest: The Path to Mastery</span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="rpg-panel">
+                    <h5 class="text-warning border-bottom pb-2">Karakter Stats</h5>
+                    <p class="mb-1">Class: <span class="text-info" id="char-class">Strategist (Mentor)</span></p>
+                    <p class="mb-1">Level: <span class="text-light" id="char-level">3</span></p>
+                    <div class="mb-3">
+                        <small>EXP Bar (Level 3 - 4)</small>
+                        <div class="exp-bar">
+                            <div class="exp-fill" style="width: 65%" id="exp-fill">65%</div>
+                        </div>
+                    </div>
+
+                    <h6 class="mt-4 text-warning">Skills (Current Stats)</h6>
+                    <p class="mb-1 small">Logic: <span class="text-success">★★★☆☆</span></p>
+                    <p class="mb-1 small">Creativity: <span class="text-danger">★★☆☆☆</span></p>
+                    <p class="mb-1 small">Communication: <span class="text-success">★★★★☆</span></p>
+                    <p class="mb-1 small">Leadership: <span class="text-success">★★★☆☆</span></p>
+                </div>
+
+                <div class="rpg-panel">
+                    <h5 class="text-warning border-bottom pb-2">Inventori (Tools)</h5>
+                    <p class="small text-muted">Aset digital yang sudah dikumpulkan:</p>
+                    <ul class="list-unstyled small">
+                        <li><span class="text-info">✔</span> Sertifikat Dasar Programming</li>
+                        <li><span class="text-info">✔</span> Resume Versi 1.0</li>
+                        <li><span class="text-info">✔</span> Akun GitHub Aktif</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="rpg-panel">
+                    <h5 class="text-info border-bottom pb-2">World Map (Timeline Perjalanan)</h5>
+                    <div class="world-map">
+                        <div class="map-node node-active">Semester 1<br>(Initial Setup)</div>
+                        <div class="map-connector"></div>
+                        <div class="map-node">Side Quest:<br>Portofolio</div>
+                        <div class="map-connector"></div>
+                        <div class="map-node">Semester 4<br>(The Grinding)</div>
+                        <div class="map-connector"></div>
+                        <div class="map-node">FINAL BOSS:<br>APPLY KERJA</div>
+                    </div>
+                </div>
+
+                <div class="rpg-panel">
+                    <h5 class="text-danger border-bottom pb-2">Quest Log (Roadmap Aksi)</h5>
+                    <div id="quest-log">
+                        <div class="quest-item quest-completed">
+                            <span class="text-success">✔</span> Main Quest: Selesaikan Tes Minat (Class Chosen)
+                        </div>
+                        <div class="quest-item quest-active">
+                            <span class="text-warning">►</span> Main Quest: Kuasai **Logic** hingga level 3.
+                        </div>
+                        <div class="quest-item">
+                            <span class="text-muted">☐</span> Side Quest: Selesaikan kursus dasar **Python** (Wajib)
+                        </div>
+                        <div class="quest-item">
+                            <span class="text-muted">☐</span> Side Quest: Buat 5 post di LinkedIn
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-outline-warning mt-3">Lihat Semua Quest</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script>
+        // Script JS tambahan untuk interaktivitas dasar (optional)
+        document.addEventListener('DOMContentLoaded', () => {
+            // Logika untuk menampilkan informasi saat mengklik map node
+            document.querySelectorAll('.map-node').forEach(node => {
+                node.addEventListener('click', function () {
+                    alert("Anda sedang berada di fase: " + this.textContent.trim().replace(/\s+/g, ' '));
+                });
+            });
+
+            // Di Laravel, Anda akan menggunakan Livewire atau Inertia untuk memperbarui
+            // Level, EXP, dan Quest Log secara dinamis berdasarkan data database.
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Compass | Dialog Pixelated</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* Base Pixelated Look */
+        body,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: 'Press Start 2P', cursive;
+            /* Font Pixelated */
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        body {
+            background-color: #333;
+            /* Dark background like old games */
+            color: #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            background-image: url('data:image/svg+xml;utf8,<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="8" height="8" fill="%23444"/><rect x="8" y="8" width="8" height="8" fill="%23444"/><rect x="8" y="0" width="8" height="8" fill="%23333"/><rect x="0" y="8" width="8" height="8" fill="%23333"/></svg>');
+            /* Pixelated background pattern */
+            background-size: 16px 16px;
+        }
+
+        .game-screen {
+            background-color: #1a1a1a;
+            border: 5px solid #555;
+            box-shadow: 0 0 0 2px #aaa;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Character Sprite (Optional, just a placeholder) */
+        .character-sprite {
+            width: 80px;
+            height: 80px;
+            background-color: #9b59b6;
+            /* Placeholder color for character */
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            border: 2px solid #555;
+            box-shadow: 2px 2px 0 #222;
+        }
+
+        /* Dialog Box Styling */
+        .dialog-box {
+            background-color: #000000;
+            border: 3px solid #555;
+            padding: 15px;
+            color: #fff;
+            font-size: 0.8em;
+            text-shadow: 1px 1px #000;
+            box-shadow: 4px 4px 0 #333;
+        }
+
+        .dialog-text {
+            min-height: 60px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        /* Options/Buttons Styling */
+        .options-container button {
+            background-color: #007bff;
+            color: white;
+            border: 2px solid #0056b3;
+            padding: 10px 15px;
+            margin-right: 10px;
+            cursor: pointer;
+            font-size: 0.7em;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0 #0056b3;
+            transition: background-color 0.1s, box-shadow 0.1s;
+        }
+
+        .options-container button:hover {
+            background-color: #0056b3;
+            box-shadow: 1px 1px 0 #0056b3;
+        }
+
+        .options-container button:active {
+            box-shadow: none;
+            transform: translate(2px, 2px);
+        }
+
+        .options-container button:disabled {
+            background-color: #555;
+            border-color: #333;
+            box-shadow: 2px 2px 0 #333;
+            cursor: not-allowed;
+        }
+
+        /* Progress Bar (Optional) */
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #555;
+            border: 1px solid #333;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #28a745;
+            transition: width 0.3s linear;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="game-screen">
+        <div class="character-sprite"></div>
+
+        <div class="dialog-box">
+            <div class="dialog-text" id="dialog-text">Halo, petualang! Siapkah kamu menemukan jalan karirmu?</div>
+            <div class="options-container" id="options-container">
+                <button id="start-quiz-btn">Mulai Petualangan</button>
+                <button id="skip-btn" disabled>Lewati (Tidak disarankan)</button>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dialogTextElement = document.getElementById('dialog-text');
+        const optionsContainer = document.getElementById('options-container');
+        const startQuizBtn = document.getElementById('start-quiz-btn');
+        const skipBtn = document.getElementById('skip-btn');
+        const progressBarFill = document.getElementById('progress-fill');
+
+        let currentQuestionIndex = 0;
+        const questions = [
+            {
+                text: "Apa yang paling memotivasimu? ✨",
+                options: [
+                    { text: "Memecahkan masalah kompleks", value: "Problem Solving" },
+                    { text: "Menciptakan hal baru", value: "Creativity" },
+                    { text: "Berinteraksi dengan banyak orang", value: "Social" },
+                    { text: "Mengelola tim dan proyek", value: "Leadership" }
+                ]
+            },
+            {
+                text: "Bagaimana kamu belajar paling efektif? 📚",
+                options: [
+                    { text: "Membaca buku & jurnal", value: "Reading" },
+                    { text: "Praktik langsung & mencoba-coba", value: "Hands-on" },
+                    { text: "Diskusi & kolaborasi kelompok", value: "Collaboration" },
+                    { text: "Menganalisis data & statistik", value: "Analytical" }
+                ]
+            },
+            {
+                text: "Jika kamu punya kekuatan super, apa yang kamu pilih? 💪",
+                options: [
+                    { text: "Kecerdasan Super", value: "Intelligence" },
+                    { text: "Kekuatan Kreatif", value: "CreativePower" },
+                    { text: "Empati Tak Terbatas", value: "Empathy" },
+                    { text: "Manajemen Waktu Sempurna", value: "TimeManagement" }
+                ]
+            },
+            {
+                text: "Selamat! Kuesioner selesai. Kami akan memproses hasilnya...",
+                options: [] // No options for final screen
+            }
+        ];
+
+        let userResponses = []; // Untuk menyimpan jawaban pengguna
+
+        function updateProgressBar() {
+            const progress = (currentQuestionIndex / (questions.length - 1)) * 100;
+            progressBarFill.style.width = `${progress}%`;
+        }
+
+        function displayQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const question = questions[currentQuestionIndex];
+                dialogTextElement.textContent = question.text;
+                optionsContainer.innerHTML = ''; // Clear previous options
+
+                if (question.options.length > 0) {
+                    question.options.forEach(option => {
+                        const button = document.createElement('button');
+                        button.textContent = option.text;
+                        button.setAttribute('data-value', option.value);
+                        button.addEventListener('click', () => selectOption(option.value));
+                        optionsContainer.appendChild(button);
+                    });
+                } else {
+                    // Final screen, no options, maybe a "View Results" button later
+                    const resultsButton = document.createElement('button');
+                    resultsButton.textContent = "Lihat Hasil Karir";
+                    resultsButton.addEventListener('click', () => alert("Melihat hasil karir Anda! (Di Laravel, ini akan memuat halaman hasil)"));
+                    optionsContainer.appendChild(resultsButton);
+                }
+                updateProgressBar();
+            } else {
+                // Should not happen if last question is handled
+                dialogTextElement.textContent = "Terima kasih telah berpartisipasi!";
+                optionsContainer.innerHTML = '';
+            }
+        }
+
+        function selectOption(value) {
+            userResponses.push(value); // Simpan jawaban
+            console.log("Jawaban:", value);
+            currentQuestionIndex++;
+            displayQuestion(); // Lanjut ke pertanyaan berikutnya
+        }
+
+        startQuizBtn.addEventListener('click', () => {
+            startQuizBtn.disabled = true;
+            skipBtn.disabled = true;
+            displayQuestion();
+        });
+
+        // Inisialisasi tampilan awal
+        updateProgressBar();
+    </script>
+
+</body>
+
+</html>
