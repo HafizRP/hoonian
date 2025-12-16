@@ -10,13 +10,14 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     nodejs \
-    npm
+    npm \
+    libzip-dev
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -31,7 +32,7 @@ RUN sed -i 's/^\(user\|group\) =/;\1 =/g' /usr/local/etc/php-fpm.d/www.conf
 COPY composer.json composer.lock ./
 
 # Install Composer dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
 
 # Copy existing application directory contents
 COPY . /var/www
