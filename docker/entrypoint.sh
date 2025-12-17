@@ -3,6 +3,18 @@ set -e
 
 echo "Starting Laravel application setup..."
 
+echo "------------------------------------------------"
+echo "DEBUG: Database Environment Variables"
+echo "------------------------------------------------"
+echo "DB_CONNECTION: $DB_CONNECTION"
+echo "DB_HOST: $DB_HOST"
+echo "DB_PORT: $DB_PORT"
+echo "DB_DATABASE: $DB_DATABASE"
+echo "DB_USERNAME: $DB_USERNAME"
+echo "DB_PASSWORD: $DB_PASSWORD"
+echo "------------------------------------------------"
+
+
 # Set proper permissions for Laravel directories
 echo "Setting permissions for storage and cache directories..."
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache
