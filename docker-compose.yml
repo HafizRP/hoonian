@@ -13,7 +13,7 @@ services:
         environment:
             # Database configuration - update these with your external database credentials
             DB_CONNECTION: mysql
-            DB_HOST: host.docker.internal
+            DB_HOST: ${DB_HOST}
             DB_PORT: ${DB_PORT:-3306}
             DB_DATABASE: ${DB_DATABASE}
             DB_USERNAME: ${DB_USERNAME}
