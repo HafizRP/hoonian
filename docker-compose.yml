@@ -9,7 +9,7 @@ services:
         restart: unless-stopped
         tty: true
         ports:
-            - "8004:3002"
+            - "8004:80"
         environment:
             # Database configuration - update these with your external database credentials
             DB_CONNECTION: mysql
