@@ -80,14 +80,14 @@ class PropertyController extends Controller
     {
         // 1. Validasi Input sesuai struktur table
         $request->validate([
-            'name'          => 'required|string|max:255',
-            'price'         => 'required|numeric',
-            'address'       => 'required|string',
-            'city'          => 'required|string',
-            'thumbnail'     => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'images.*'      => 'image|mimes:jpeg,png,jpg|max:2048', // Untuk Gallery
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'address' => 'required|string',
+            'city' => 'required|string',
+            'thumbnail' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048', // Untuk Gallery
             'property_type' => 'required|exists:properties_type,id',
-            'owner_id'      => 'required|exists:users,id',
+            'owner_id' => 'required|exists:users,id',
         ]);
 
         // Gunakan Transaction agar jika salah satu gagal, data tidak tersimpan setengah-setengah
@@ -102,22 +102,22 @@ class PropertyController extends Controller
 
             // 3. Simpan ke table properties
             $property = Property::create([
-                'name'          => $request->name,
-                'price'         => $request->price,
-                'address'       => $request->address,
-                'city'          => $request->city,
-                'thumbnail'     => $thumbnailPath,
-                'description'   => $request->description,
-                'land_area'     => $request->land_area,
+                'name' => $request->name,
+                'price' => $request->price,
+                'address' => $request->address,
+                'city' => $request->city,
+                'thumbnail' => $thumbnailPath,
+                'description' => $request->description,
+                'land_area' => $request->land_area,
                 'building_area' => $request->building_area,
-                'bedrooms'      => $request->bedrooms,
-                'bathrooms'     => $request->bathrooms,
-                'floors'        => $request->floors,
-                'maps_url'      => $request->maps_url,
-                'featured'      => $request->featured ?? 0,
-                'popular'       => $request->popular ?? 0,
-                'status'        => $request->status ?? '1',
-                'owner_id'      => $request->owner_id,
+                'bedrooms' => $request->bedrooms,
+                'bathrooms' => $request->bathrooms,
+                'floors' => $request->floors,
+                'maps_url' => $request->maps_url,
+                'featured' => $request->featured ?? 0,
+                'popular' => $request->popular ?? 0,
+                'status' => $request->status ?? '1',
+                'owner_id' => $request->owner_id,
                 'property_type' => $request->property_type,
             ]);
 
@@ -128,7 +128,7 @@ class PropertyController extends Controller
 
                     PropertyGallery::create([
                         'property_id' => $property->id,
-                        'url'         => $galleryPath,
+                        'url' => $galleryPath,
                     ]);
                 }
             }
@@ -181,10 +181,10 @@ class PropertyController extends Controller
 
         // 1. Validasi
         $request->validate([
-            'name'          => 'required|string|max:255',
-            'price'         => 'required|numeric',
-            'thumbnail'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'images.*'      => 'image|mimes:jpeg,png,jpg|max:2048',
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
             'property_type' => 'required|exists:properties_type,id',
         ]);
 
@@ -217,7 +217,7 @@ class PropertyController extends Controller
 
                     PropertyGallery::create([
                         'property_id' => $property->id,
-                        'url'         => $galleryPath,
+                        'url' => $galleryPath,
                     ]);
                 }
             }
@@ -277,6 +277,11 @@ class PropertyController extends Controller
         // Base query
         $query = Property::with(['owner']);
 
+        // If the logged‑in user is an agent (role = 2), only show their own properties
+        if (auth()->check() && auth()->user()->role == 2) {
+            $query->where('owner_id', auth()->id());
+        }
+
         // Apply filters
         if ($request->filled('city')) {
             $query->where('city', 'LIKE', '%' . $request->city . '%');
@@ -324,7 +329,8 @@ class PropertyController extends Controller
         return view('admin.property.create', compact('types', 'users'));
     }
 
-    public function backofficeEdit(Request $request, $id) {
+    public function backofficeEdit(Request $request, $id)
+    {
         $property = Property::findOrFail($id);
         $types = PropertyType::all();
         $users = User::all();

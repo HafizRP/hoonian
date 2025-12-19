@@ -57,7 +57,7 @@ Route::middleware('auth')->group(function () {
 | Backoffice / Admin Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'admin']) // Tambahkan middleware admin jika ada
+Route::middleware(['auth']) // Removed admin middleware
     ->prefix('backoffice')
     ->name('backoffice.')
     ->group(function () {

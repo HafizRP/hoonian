@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('title', 'Dashboard - Hoonian Admin')
+
 @section('content')
     <div class="page-inner">
         <!-- Header Section -->
@@ -231,39 +233,42 @@
                     <div class="card-body">
                         <div class="row">
                             @forelse($latestProperties as $p)
-                            <div class="col-md-4 mb-3">
-                                <div class="card card-post card-round shadow-sm border h-100">
-                                    <div class="card-body">
-                                        <div class="info-post">
-                                            <p class="username fw-bold mb-0 text-truncate">{{ $p->name }}</p>
-                                            <p class="small text-muted mb-2">
-                                                <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $p->city }}
-                                            </p>
-                                        </div>
-                                        <div class="separator-solid my-2"></div>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h3 class="card-title fw-bold text-primary mb-0" style="font-size: 1.1rem">
-                                                Rp {{ number_format($p->price, 0, ',', '.') }}
-                                            </h3>
-                                            <span class="badge {{ $p->status == '1' ? 'badge-success' : 'badge-secondary' }}">
-                                                {{ $p->status == '1' ? 'Available' : 'Sold' }}
-                                            </span>
-                                        </div>
-                                        <div class="mt-3">
-                                            <a href="{{ route('properties.show', $p->id) }}" class="btn btn-outline-primary btn-sm btn-round" target="_blank">
-                                                <i class="fa fa-eye me-1"></i> Details
-                                            </a>
-                                            <a href="{{ route('backoffice.properties.edit', $p->id) }}" class="btn btn-outline-secondary btn-sm btn-round">
-                                                <i class="fa fa-edit me-1"></i> Edit
-                                            </a>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card card-post card-round shadow-sm border h-100">
+                                        <div class="card-body">
+                                            <div class="info-post">
+                                                <p class="username fw-bold mb-0 text-truncate">{{ $p->name }}</p>
+                                                <p class="small text-muted mb-2">
+                                                    <i class="fas fa-map-marker-alt text-danger me-1"></i>{{ $p->city }}
+                                                </p>
+                                            </div>
+                                            <div class="separator-solid my-2"></div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h3 class="card-title fw-bold text-primary mb-0" style="font-size: 1.1rem">
+                                                    Rp {{ number_format($p->price, 0, ',', '.') }}
+                                                </h3>
+                                                <span
+                                                    class="badge {{ $p->status == '1' ? 'badge-success' : 'badge-secondary' }}">
+                                                    {{ $p->status == '1' ? 'Available' : 'Sold' }}
+                                                </span>
+                                            </div>
+                                            <div class="mt-3">
+                                                <a href="{{ route('properties.show', $p->id) }}"
+                                                    class="btn btn-outline-primary btn-sm btn-round" target="_blank">
+                                                    <i class="fa fa-eye me-1"></i> Details
+                                                </a>
+                                                <a href="{{ route('backoffice.properties.edit', $p->id) }}"
+                                                    class="btn btn-outline-secondary btn-sm btn-round">
+                                                    <i class="fa fa-edit me-1"></i> Edit
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                             @empty
-                            <div class="col-12 text-center py-4">
-                                <p class="text-muted">No properties yet</p>
-                            </div>
+                                <div class="col-12 text-center py-4">
+                                    <p class="text-muted">No properties yet</p>
+                                </div>
                             @endforelse
                         </div>
                     </div>
@@ -283,7 +288,8 @@
                             @forelse ($newCustomers as $c)
                                 <div class="item-list d-flex align-items-center mb-3">
                                     <div class="avatar">
-                                        <img src="{{ $c->profile_img ? asset($c->profile_img) : 'https://via.placeholder.com/50' }}" alt="..." class="avatar-img rounded-circle" />
+                                        <img src="{{ $c->profile_img ? asset($c->profile_img) : 'https://via.placeholder.com/50' }}"
+                                            alt="..." class="avatar-img rounded-circle" />
                                     </div>
                                     <div class="info-user ms-3">
                                         <div class="username fw-bold">{{ $c->name }}</div>
@@ -326,11 +332,13 @@
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar avatar-sm me-2">
-                                                         <img src="{{ $t->user->profile_img ? asset($t->user->profile_img) : 'https://via.placeholder.com/30' }}" class="avatar-img rounded-circle"/>
+                                                        <img src="{{ $t->user->profile_img ? asset($t->user->profile_img) : 'https://via.placeholder.com/30' }}"
+                                                            class="avatar-img rounded-circle" />
                                                     </div>
                                                     <span class="fw-bold">{{ $t->user->name }}</span>
                                                 </div>
-                                                <small class="text-muted d-block mt-1">Property: {{ $t->property->name ?? 'Deleted' }}</small>
+                                                <small class="text-muted d-block mt-1">Property:
+                                                    {{ $t->property->name ?? 'Deleted' }}</small>
                                             </td>
                                             <td class="text-end">{{ $t->created_at->format('M d, Y') }}</td>
                                             <td class="text-end fw-bold">Rp {{ number_format($t->amount, 0, ',', '.') }}</td>
@@ -360,7 +368,7 @@
 
 @section('scripts')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Initialize DataTable for transactions
             $('#dashboard-table').DataTable({
                 "pageLength": 5,
@@ -369,9 +377,9 @@
                 "info": false,
                 "ordering": false,
                 "language": {
-                    "paginate": { 
-                        "next": '<i class="fa fa-chevron-right"></i>', 
-                        "previous": '<i class="fa fa-chevron-left"></i>' 
+                    "paginate": {
+                        "next": '<i class="fa fa-chevron-right"></i>',
+                        "previous": '<i class="fa fa-chevron-left"></i>'
                     }
                 }
             });

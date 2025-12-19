@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@section('title', 'Browse Properties')
+
 @section('content')
     {{-- <div class="hero page-inner overlay" style="background-image: url('{{ asset('assets/images/hero_bg_1.jpg') }}')">
         <div class="container">
@@ -18,8 +20,8 @@
                 </div>
 
                 <div class="text-white mb-5">
-                    <form action="{{ route('properties.index') }}" method="GET"
-                        class="row g-3 align-items-end form-search" data-aos="fade-up" data-aos-delay="200">
+                    <form action="{{ route('properties.index') }}" method="GET" class="row g-3 align-items-end form-search"
+                        data-aos="fade-up" data-aos-delay="200">
 
                         <div class="col-md-12">
                             <label class="form-label">Name</label>
@@ -52,9 +54,9 @@
                                 <option value=""></option>
 
                                 @foreach ($properties_type as $item)
-                                    <option value="{{ $item->id }}"
-                                        {{ request('type') == $item->id ? 'selected' : '' }}> {{ $item->name }}
-                                    </option>
+                                <option value="{{ $item->id }}" {{ request('type')==$item->id ? 'selected' : '' }}> {{
+                                    $item->name }}
+                                </option>
                                 @endforeach
                             </select>
                         </div>
@@ -82,8 +84,8 @@
                     <h1 class="heading text-center" data-aos="fade-up">
                         Easiest way to find your dream home
                     </h1>
-                    <form action="{{ route('properties.index') }}" method="GET"
-                        class="row g-3 align-items-end form-search" data-aos="fade-up" data-aos-delay="200">
+                    <form action="{{ route('properties.index') }}" method="GET" class="row g-3 align-items-end form-search"
+                        data-aos="fade-up" data-aos-delay="200">
 
                         <div class="col-md-12">
                             <label class="form-label">Name</label>
@@ -105,8 +107,8 @@
 
                         <div class="col-md-2">
                             <label class="form-label">Max Price</label>
-                            <input type="text" name="max_price" class="form-control"
-                                value="{{ request('max_price') }}" placeholder="e.g. 500000">
+                            <input type="text" name="max_price" class="form-control" value="{{ request('max_price') }}"
+                                placeholder="e.g. 500000">
                         </div>
 
 
@@ -116,8 +118,8 @@
                                 <option value=""></option>
 
                                 @foreach ($properties_type as $item)
-                                    <option value="{{ $item->id }}"
-                                        {{ request('type') == $item->id ? 'selected' : '' }}> {{ $item->name }}
+                                    <option value="{{ $item->id }}" {{ request('type') == $item->id ? 'selected' : '' }}>
+                                        {{ $item->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -268,8 +270,7 @@
 
                             <div class="property-item">
                                 <a href="{{ route('properties.show', 1) }}" class="img">
-                                    <img src="{{ asset('assets/images/img_5.jpg') }}" alt="Image"
-                                        class="img-fluid" />
+                                    <img src="{{ asset('assets/images/img_5.jpg') }}" alt="Image" class="img-fluid" />
                                 </a>
 
                                 <div class="property-content">
@@ -298,8 +299,7 @@
 
                             <div class="property-item">
                                 <a href="{{ route('properties.show', 1) }}" class="img">
-                                    <img src="{{ asset('assets/images/img_6.jpg') }}" alt="Image"
-                                        class="img-fluid" />
+                                    <img src="{{ asset('assets/images/img_6.jpg') }}" alt="Image" class="img-fluid" />
                                 </a>
 
                                 <div class="property-content">
@@ -328,8 +328,7 @@
 
                             <div class="property-item">
                                 <a href="{{ route('properties.show', 1) }}" class="img">
-                                    <img src="{{ asset('assets/images/img_7.jpg') }}" alt="Image"
-                                        class="img-fluid" />
+                                    <img src="{{ asset('assets/images/img_7.jpg') }}" alt="Image" class="img-fluid" />
                                 </a>
 
                                 <div class="property-content">
@@ -358,8 +357,7 @@
 
                             <div class="property-item">
                                 <a href="{{ route('properties.show', 1) }}" class="img">
-                                    <img src="{{ asset('assets/images/img_8.jpg') }}" alt="Image"
-                                        class="img-fluid" />
+                                    <img src="{{ asset('assets/images/img_8.jpg') }}" alt="Image" class="img-fluid" />
                                 </a>
 
                                 <div class="property-content">
@@ -388,8 +386,7 @@
 
                             <div class="property-item">
                                 <a href="{{ route('properties.show', 1) }}" class="img">
-                                    <img src="{{ asset('assets/images/img_1.jpg') }}" alt="Image"
-                                        class="img-fluid" />
+                                    <img src="{{ asset('assets/images/img_1.jpg') }}" alt="Image" class="img-fluid" />
                                 </a>
 
                                 <div class="property-content">
@@ -418,10 +415,8 @@
                         </div>
 
                         <div id="property-nav" class="controls" tabindex="0" aria-label="Carousel Navigation">
-                            <span class="prev" data-controls="prev" aria-controls="property"
-                                tabindex="-1">Prev</span>
-                            <span class="next" data-controls="next" aria-controls="property"
-                                tabindex="-1">Next</span>
+                            <span class="prev" data-controls="prev" aria-controls="property" tabindex="-1">Prev</span>
+                            <span class="next" data-controls="next" aria-controls="property" tabindex="-1">Next</span>
                         </div>
                     </div>
                 </div>
@@ -470,8 +465,7 @@
                                         </span>
                                     </div>
 
-                                    <a href="{{ route('properties.show', $item->id) }}"
-                                        class="btn btn-primary py-2 px-3">See
+                                    <a href="{{ route('properties.show', $item->id) }}" class="btn btn-primary py-2 px-3">See
                                         details</a>
                                 </div>
                             </div>

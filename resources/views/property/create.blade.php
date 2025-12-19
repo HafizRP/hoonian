@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@section('title', 'Post a Property')
+
 @section('content')
     <div class="hero page-inner overlay" style="background-image: url('{{ asset('images/hero_bg_1.jpg') }}')">
         <div class="container">
@@ -69,9 +71,9 @@
                                     class="form-control form-select @error('property_type') is-invalid @enderror" required>
                                     <option value="">Select Type</option>
                                     @foreach ($properties_type as $type)
-                                        <option value="{{ $type->id }}"
-                                            {{ old('property_type') == $type->id ? 'selected' : '' }}>
-                                            {{ $type->name }}</option>
+                                        <option value="{{ $type->id }}" {{ old('property_type') == $type->id ? 'selected' : '' }}>
+                                            {{ $type->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 @error('property_type')
@@ -114,7 +116,8 @@
                             <div class="col-12 mb-3">
                                 <label for="address" class="form-label">Full Address</label>
                                 <textarea name="address" id="address" cols="30" rows="3"
-                                    class="form-control @error('address') is-invalid @enderror" required>{{ old('address') }}</textarea>
+                                    class="form-control @error('address') is-invalid @enderror"
+                                    required>{{ old('address') }}</textarea>
                                 @error('address')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -190,8 +193,7 @@
                             <div class="col-md-12 mb-3">
                                 <label for="thumbnail" class="form-label">Main Thumbnail</label>
                                 <input type="file" name="thumbnail" id="thumbnail"
-                                    class="form-control @error('thumbnail') is-invalid @enderror" required
-                                    accept="image/*">
+                                    class="form-control @error('thumbnail') is-invalid @enderror" required accept="image/*">
                                 @error('thumbnail')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -219,7 +221,7 @@
     </div>
 
     <script>
-        document.getElementById('images').addEventListener('change', function(event) {
+        document.getElementById('images').addEventListener('change', function (event) {
             const previewContainer = document.getElementById('preview-gallery');
             previewContainer.innerHTML = ''; // Clear previous previews
 
@@ -228,7 +230,7 @@
                 Array.from(files).forEach(file => {
                     if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
-                        reader.onload = function(e) {
+                        reader.onload = function (e) {
                             const img = document.createElement('img');
                             img.src = e.target.result;
                             img.className = 'img-thumbnail rounded';

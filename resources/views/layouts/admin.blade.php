@@ -3,7 +3,7 @@
 
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Hoonian Admin Dashboard</title>
+    <title>@yield('title', 'Hoonian Admin Dashboard')</title>
     <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
     <link rel="icon" href="{{ asset('dashboard/assets/img/kaiadmin/favicon.ico') }}" type="image/x-icon" />
 
@@ -23,7 +23,7 @@
                 ],
                 urls: ["{{ asset('dashboard/assets/css/fonts.min.css') }}"],
             },
-            active: function() {
+            active: function () {
                 sessionStorage.fonts = true;
             },
         });
@@ -33,7 +33,7 @@
     <link rel="stylesheet" href="{{ asset('dashboard/assets/css/bootstrap.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('dashboard/assets/css/plugins.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('dashboard/assets/css/kaiadmin.min.css') }}" />
-    
+
     <!-- DataTables Buttons CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css" />
 
@@ -128,9 +128,9 @@
                 <!-- Navbar Header -->
                 <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
                     <div class="container-fluid">
-                            <!-- Navbar Nav (Right Aligned) -->
-                            <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-                                <li class="nav-item topbar-user dropdown hidden-caret">
+                        <!-- Navbar Nav (Right Aligned) -->
+                        <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                            <li class="nav-item topbar-user dropdown hidden-caret">
                                 <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#"
                                     aria-expanded="false">
                                     <div class="avatar-sm">
@@ -167,10 +167,11 @@
                                             <a class="dropdown-item" href="#">Account Setting</a>
                                             <div class="dropdown-divider"></div>
                                             <a class="dropdown-item" href="{{ route('logout') }}"
-                                               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                 Logout
                                             </a>
-                                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                            <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                                class="d-none">
                                                 @csrf
                                             </form>
                                         </li>
@@ -195,12 +196,10 @@
                         <div class="switch-block">
                             <h4>Logo Header</h4>
                             <div class="btnSwitch">
-                                <button type="button" class="selected changeLogoHeaderColor"
-                                    data-color="dark"></button>
+                                <button type="button" class="selected changeLogoHeaderColor" data-color="dark"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="blue"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="purple"></button>
-                                <button type="button" class="changeLogoHeaderColor"
-                                    data-color="light-blue"></button>
+                                <button type="button" class="changeLogoHeaderColor" data-color="light-blue"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="green"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="orange"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="red"></button>
@@ -209,8 +208,7 @@
                                 <button type="button" class="changeLogoHeaderColor" data-color="dark2"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="blue2"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="purple2"></button>
-                                <button type="button" class="changeLogoHeaderColor"
-                                    data-color="light-blue2"></button>
+                                <button type="button" class="changeLogoHeaderColor" data-color="light-blue2"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="green2"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="orange2"></button>
                                 <button type="button" class="changeLogoHeaderColor" data-color="red2"></button>
@@ -226,8 +224,7 @@
                                 <button type="button" class="changeTopBarColor" data-color="green"></button>
                                 <button type="button" class="changeTopBarColor" data-color="orange"></button>
                                 <button type="button" class="changeTopBarColor" data-color="red"></button>
-                                <button type="button" class="selected changeTopBarColor"
-                                    data-color="white"></button>
+                                <button type="button" class="selected changeTopBarColor" data-color="white"></button>
                                 <br />
                                 <button type="button" class="changeTopBarColor" data-color="dark2"></button>
                                 <button type="button" class="changeTopBarColor" data-color="blue2"></button>
@@ -242,8 +239,7 @@
                             <h4>Sidebar</h4>
                             <div class="btnSwitch">
                                 <button type="button" class="changeSideBarColor" data-color="white"></button>
-                                <button type="button" class="selected changeSideBarColor"
-                                    data-color="dark"></button>
+                                <button type="button" class="selected changeSideBarColor" data-color="dark"></button>
                                 <button type="button" class="changeSideBarColor" data-color="dark2"></button>
                             </div>
                         </div>

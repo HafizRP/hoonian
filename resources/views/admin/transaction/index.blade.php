@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('title', 'Transactions - Hoonian Admin')
+
 @section('content')
     <div class="page-inner">
         <!-- Statistics Cards -->
@@ -117,15 +119,15 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-label fw-bold">Date From</label>
-                                        <input type="date" name="date_from" class="form-control" 
-                                               value="{{ request('date_from') }}" />
+                                        <input type="date" name="date_from" class="form-control"
+                                            value="{{ request('date_from') }}" />
                                     </div>
                                 </div>
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-label fw-bold">Date To</label>
-                                        <input type="date" name="date_to" class="form-control" 
-                                               value="{{ request('date_to') }}" />
+                                        <input type="date" name="date_to" class="form-control"
+                                            value="{{ request('date_to') }}" />
                                     </div>
                                 </div>
                                 <div class="col-md-2">
@@ -133,9 +135,12 @@
                                         <label class="form-label fw-bold">Status</label>
                                         <select name="status" class="form-control">
                                             <option value="">All Status</option>
-                                            <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>Accepted</option>
-                                            <option value="leading" {{ request('status') == 'leading' ? 'selected' : '' }}>Leading</option>
-                                            <option value="outbid" {{ request('status') == 'outbid' ? 'selected' : '' }}>Outbid</option>
+                                            <option value="accepted" {{ request('status') == 'accepted' ? 'selected' : '' }}>
+                                                Accepted</option>
+                                            <option value="leading" {{ request('status') == 'leading' ? 'selected' : '' }}>
+                                                Leading</option>
+                                            <option value="outbid" {{ request('status') == 'outbid' ? 'selected' : '' }}>
+                                                Outbid</option>
                                         </select>
                                     </div>
                                 </div>
@@ -157,7 +162,8 @@
                                         <button type="submit" class="btn btn-primary btn-block w-100">
                                             <i class="fa fa-filter"></i> Apply Filters
                                         </button>
-                                        <a href="{{ route('backoffice.transactions') }}" class="btn btn-secondary btn-block w-100 mt-2">
+                                        <a href="{{ route('backoffice.transactions') }}"
+                                            class="btn btn-secondary btn-block w-100 mt-2">
                                             <i class="fa fa-times"></i> Clear
                                         </a>
                                     </div>
@@ -182,28 +188,30 @@
                         </thead>
                         <tbody>
                             @foreach ($transactions as $trx)
-                                <tr>
-                                    <td>{{ $trx->created_at->format('d M Y') }}</td>
-                                    <td>#TRX-{{ str_pad($trx->id, 5, '0', STR_PAD_LEFT) }}</td>
-                                    <td>
-                                        @if($trx->property)
-                                            <a href="{{ route('properties.show', $trx->property->id) }}" target="_blank">{{ $trx->property->name }}</a>
-                                        @else
-                                            <span class="text-muted">Deleted Property</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $trx->user->name ?? 'Unknown' }}</td>
-                                    <td data-order="{{ $trx->amount }}">{{ 'Rp ' . number_format($trx->amount, 0, ',', '.') }}</td>
-                                    <td>
-                                        @php
-                                            $statusClass = $trx->status == 'accepted' ? 'badge-success' : ($trx->status == 'leading' ? 'badge-warning' : 'badge-secondary');
-                                            $statusLabel = $trx->status == 'accepted' ? 'ACCEPTED' : ($trx->status == 'leading' ? 'LEADING' : 'OUTBID');
-                                        @endphp
-                                        <span class="badge {{ $statusClass }}">
-                                            {{ $statusLabel }}
-                                        </span>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td>{{ $trx->created_at->format('d M Y') }}</td>
+                                        <td>#TRX-{{ str_pad($trx->id, 5, '0', STR_PAD_LEFT) }}</td>
+                                        <td>
+                                            @if($trx->property)
+                                                <a href="{{ route('properties.show', $trx->property->id) }}"
+                                                    target="_blank">{{ $trx->property->name }}</a>
+                                            @else
+                                                <span class="text-muted">Deleted Property</span>
+                                            @endif
+                                        </td>
+                                        <td>{{ $trx->user->name ?? 'Unknown' }}</td>
+                                        <td data-order="{{ $trx->amount }}">{{ 'Rp ' . number_format($trx->amount, 0, ',', '.') }}
+                                        </td>
+                                        <td>
+                                @php
+                                    $statusClass = $trx->status == 'accepted' ? 'badge-success' : ($trx->status == 'leading' ? 'badge-warning' : 'badge-secondary');
+                                    $statusLabel = $trx->status == 'accepted' ? 'ACCEPTED' : ($trx->status == 'leading' ? 'LEADING' : 'OUTBID');
+                                @endphp
+                                            <span class="badge {{ $statusClass }}">
+                                                {{ $statusLabel }}
+                                            </span>
+                                        </td>
+                                    </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -223,13 +231,13 @@
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Get current date for filename
             var today = new Date();
-            var dateStr = today.getFullYear() + '-' + 
-                         String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                         String(today.getDate()).padStart(2, '0');
-            
+            var dateStr = today.getFullYear() + '-' +
+                String(today.getMonth() + 1).padStart(2, '0') + '-' +
+                String(today.getDate()).padStart(2, '0');
+
             // Get filter info for filename
             var filterInfo = '';
             @if(request('status'))
@@ -239,11 +247,11 @@
                 filterInfo += '_filtered';
             @endif
 
-            // Initialize DataTable with enhanced configuration
-            var table = $('#transaction-table').DataTable({
+                // Initialize DataTable with enhanced configuration
+                var table = $('#transaction-table').DataTable({
                 "pageLength": 25,
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-                "order": [[ 0, "desc" ]], // Sort by date descending (newest first)
+                "order": [[0, "desc"]], // Sort by date descending (newest first)
                 "responsive": true,
                 "dom": 'Blfrtip',
                 "buttons": [
@@ -251,10 +259,10 @@
                         extend: 'copy',
                         text: '<i class="fa fa-copy"></i> Copy',
                         className: 'btn btn-info btn-sm',
-                        exportOptions: { 
+                        exportOptions: {
                             columns: [0, 1, 2, 3, 4, 5],
                             format: {
-                                body: function(data, row, column, node) {
+                                body: function (data, row, column, node) {
                                     // Remove HTML tags for clean export
                                     return column === 2 ? $(data).text() : data;
                                 }
@@ -266,10 +274,10 @@
                         extend: 'excel',
                         text: '<i class="fa fa-file-excel"></i> Excel',
                         className: 'btn btn-success btn-sm',
-                        exportOptions: { 
+                        exportOptions: {
                             columns: [0, 1, 2, 3, 4, 5],
                             format: {
-                                body: function(data, row, column, node) {
+                                body: function (data, row, column, node) {
                                     // Clean HTML for property column
                                     if (column === 2) {
                                         return $(data).text();
@@ -289,10 +297,10 @@
                         extend: 'pdf',
                         text: '<i class="fa fa-file-pdf"></i> PDF',
                         className: 'btn btn-danger btn-sm',
-                        exportOptions: { 
+                        exportOptions: {
                             columns: [0, 1, 2, 3, 4, 5],
                             format: {
-                                body: function(data, row, column, node) {
+                                body: function (data, row, column, node) {
                                     if (column === 2) {
                                         return $(data).text();
                                     }
@@ -307,7 +315,7 @@
                         filename: 'transactions_' + dateStr + filterInfo,
                         orientation: 'landscape',
                         pageSize: 'A4',
-                        customize: function(doc) {
+                        customize: function (doc) {
                             doc.styles.title = {
                                 fontSize: 16,
                                 bold: true,
@@ -321,10 +329,10 @@
                         extend: 'print',
                         text: '<i class="fa fa-print"></i> Print',
                         className: 'btn btn-secondary btn-sm',
-                        exportOptions: { 
+                        exportOptions: {
                             columns: [0, 1, 2, 3, 4, 5],
                             format: {
-                                body: function(data, row, column, node) {
+                                body: function (data, row, column, node) {
                                     if (column === 2) {
                                         return $(data).text();
                                     }
@@ -336,7 +344,7 @@
                             }
                         },
                         title: 'Transaction Report - ' + dateStr,
-                        customize: function(win) {
+                        customize: function (win) {
                             $(win.document.body).css('font-size', '10pt');
                             $(win.document.body).find('table')
                                 .addClass('compact')
@@ -349,14 +357,14 @@
                         className: 'btn btn-primary btn-sm'
                     }
                 ],
-                "initComplete": function(settings, json) {
+                "initComplete": function (settings, json) {
                     // Fade in table smoothly
                     $('#transaction-table').animate({ opacity: 1 }, 600);
-                    
+
                     // Move buttons to the header
                     table.buttons().container().appendTo('.card-header .d-flex');
                     $('.dt-buttons').addClass('ms-auto');
-                    
+
                     // Remove default DataTables button class for better styling
                     $('.dt-button').removeClass('dt-button');
                 }

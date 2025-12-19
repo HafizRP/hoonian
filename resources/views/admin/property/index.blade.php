@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('title', 'Properties Management - Hoonian Admin')
+
 @section('content')
     <div class="page-inner">
         <!-- Statistics Cards -->

@@ -1,5 +1,7 @@
 @extends('layouts.main')
 
+@section('title', $property->name . ' - Property Details')
+
 @section('content')
     <div class="hero page-inner overlay" style="background-image: url('{{ asset('assets/images/hero_bg_3.jpg') }}')}}'')">
         <div class="container">
@@ -45,7 +47,8 @@
                             <div class="col-md-6">
                                 <div class="p-3 bg-light rounded">
                                     <small class="text-muted d-block mb-1">Property Type</small>
-                                    <strong><i class="fas fa-building me-2 text-primary"></i> {{ $property->propertyType->name ?? 'N/A' }}</strong>
+                                    <strong><i class="fas fa-building me-2 text-primary"></i>
+                                        {{ $property->propertyType->name ?? 'N/A' }}</strong>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -63,13 +66,15 @@
                             <div class="col-md-6">
                                 <div class="p-3 bg-light rounded">
                                     <small class="text-muted d-block mb-1">Land Area</small>
-                                    <strong><i class="fas fa-ruler-combined me-2 text-primary"></i> {{ $property->land_area }} m²</strong>
+                                    <strong><i class="fas fa-ruler-combined me-2 text-primary"></i>
+                                        {{ $property->land_area }} m²</strong>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="p-3 bg-light rounded">
                                     <small class="text-muted d-block mb-1">Building Area</small>
-                                    <strong><i class="fas fa-home me-2 text-primary"></i> {{ $property->building_area }} m²</strong>
+                                    <strong><i class="fas fa-home me-2 text-primary"></i> {{ $property->building_area }}
+                                        m²</strong>
                                 </div>
                             </div>
                         </div>
@@ -124,7 +129,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="property-content col-lg-4">
                     {{-- Price & Title --}}
                     <div class="mb-4">
@@ -161,11 +166,11 @@
                                 <i class="flaticon-blueprint me-2"></i>
                                 <span class="caption">{{ $property->land_area }} m² Land</span>
                             </span>
-                             <span class="d-block d-flex align-items-center">
+                            <span class="d-block d-flex align-items-center">
                                 <i class="flaticon-house me-2"></i>
                                 <span class="caption">{{ $property->building_area }} m² Build</span>
                             </span>
-                             <span class="d-block d-flex align-items-center">
+                            <span class="d-block d-flex align-items-center">
                                 <i class="flaticon-building me-2"></i>
                                 <span class="caption">{{ $property->floors }} Floors</span>
                             </span>
@@ -174,12 +179,13 @@
 
                     {{-- Location Map --}}
                     @if($property->maps_url)
-                    <div class="mb-4">
-                        <h4 class="h5 text-primary"><i class="fas fa-map-location-dot me-2"></i> Location</h4>
-                        <div class="ratio ratio-16x9">
-                             <iframe src="{{ $property->maps_url }}" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <div class="mb-4">
+                            <h4 class="h5 text-primary"><i class="fas fa-map-location-dot me-2"></i> Location</h4>
+                            <div class="ratio ratio-16x9">
+                                <iframe src="{{ $property->maps_url }}" width="600" height="450" style="border:0;"
+                                    allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            </div>
                         </div>
-                    </div>
                     @endif
 
                     {{-- Bid Form --}}
@@ -189,7 +195,7 @@
                             <input type="hidden" name="property_id" value="{{ $property->id }}">
 
                             <button type="submit" class="btn btn-primary w-100 py-3" @disabled($property->status != 1 || $userHasBid)>
-                                <i class="fas fa-gavel me-2"></i> 
+                                <i class="fas fa-gavel me-2"></i>
                                 @if($property->status != 1)
                                     Property Sold
                                 @elseif($userHasBid)
@@ -199,11 +205,12 @@
                                 @endif
                             </button>
                         </form>
-                        
+
                         @if($userHasBid)
-                        <div class="alert alert-info mt-3 mb-0">
-                            <i class="fas fa-info-circle me-2"></i> You have already placed a bid on this property. Check <a href="{{ route('bidding.list') }}" class="alert-link">My Bidding</a> page for status.
-                        </div>
+                            <div class="alert alert-info mt-3 mb-0">
+                                <i class="fas fa-info-circle me-2"></i> You have already placed a bid on this property. Check <a
+                                    href="{{ route('bidding.list') }}" class="alert-link">My Bidding</a> page for status.
+                            </div>
                         @endif
                     </div>
 
@@ -213,10 +220,9 @@
                             <i class="fas fa-user me-2"></i> Property Owner
                         </h4>
                         <div class="text-center mb-3">
-                            <img src="{{ $property->owner->profile_img ? asset($property->owner->profile_img) : 'https://ui-avatars.com/api/?name='.urlencode($property->owner->name) }}" 
-                                 alt="Image" 
-                                 class="img-fluid rounded-circle" 
-                                 style="width: 100px; height: 100px; object-fit: cover;" />
+                            <img src="{{ $property->owner->profile_img ? asset($property->owner->profile_img) : 'https://ui-avatars.com/api/?name=' . urlencode($property->owner->name) }}"
+                                alt="Image" class="img-fluid rounded-circle"
+                                style="width: 100px; height: 100px; object-fit: cover;" />
                         </div>
                         <div class="text-center">
                             <h3 class="mb-1">{{ $property->owner->name }}</h3>
@@ -224,34 +230,37 @@
                             <p class="small text-black-50">
                                 {{ $property->owner->bio ?? 'No bio available.' }}
                             </p>
-                            
+
                             @if($property->owner->ig_url || $property->owner->x_url || $property->owner->wa_url)
-                            <div class="mt-3">
-                                <small class="text-muted d-block mb-2">Connect with owner:</small>
-                                <ul class="list-unstyled social dark-hover d-flex justify-content-center gap-2">
-                                    @if($property->owner->ig_url)
-                                    <li>
-                                        <a href="{{ $property->owner->ig_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                            <span class="icon-instagram"></span>
-                                        </a>
-                                    </li>
-                                    @endif
-                                    @if($property->owner->x_url)
-                                    <li>
-                                        <a href="{{ $property->owner->x_url }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                            <span class="icon-twitter"></span>
-                                        </a>
-                                    </li>
-                                    @endif
-                                    @if($property->owner->wa_url)
-                                    <li>
-                                        <a href="{{ $property->owner->wa_url }}" target="_blank" class="btn btn-sm btn-outline-success">
-                                            <span class="icon-whatsapp"></span>
-                                        </a>
-                                    </li>
-                                    @endif
-                                </ul>
-                            </div>
+                                <div class="mt-3">
+                                    <small class="text-muted d-block mb-2">Connect with owner:</small>
+                                    <ul class="list-unstyled social dark-hover d-flex justify-content-center gap-2">
+                                        @if($property->owner->ig_url)
+                                            <li>
+                                                <a href="{{ $property->owner->ig_url }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                    <span class="icon-instagram"></span>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if($property->owner->x_url)
+                                            <li>
+                                                <a href="{{ $property->owner->x_url }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                    <span class="icon-twitter"></span>
+                                                </a>
+                                            </li>
+                                        @endif
+                                        @if($property->owner->wa_url)
+                                            <li>
+                                                <a href="{{ $property->owner->wa_url }}" target="_blank"
+                                                    class="btn btn-sm btn-outline-success">
+                                                    <span class="icon-whatsapp"></span>
+                                                </a>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </div>
                             @endif
                         </div>
                     </div>
