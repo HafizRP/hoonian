@@ -53,6 +53,7 @@ RUN { \
 # Configure PHP-FPM
 RUN { \
         echo '[www]'; \
+        echo 'listen = 0.0.0.0:9000'; \
         echo 'pm = dynamic'; \
         echo 'pm.max_children = 50'; \
         echo 'pm.start_servers = 10'; \
