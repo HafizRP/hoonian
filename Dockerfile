@@ -116,5 +116,5 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
 # Use entrypoint script to handle Laravel setup
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Start PHP-FPM in foreground mode
+CMD ["php-fpm", "-F"]
