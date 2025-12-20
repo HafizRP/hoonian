@@ -182,36 +182,92 @@
                                 <th>Transaction ID</th>
                                 <th>Property</th>
                                 <th>User</th>
-                                <th>Total Price</th>
+                                <th>Amount</th>
                                 <th>Status</th>
+                                <th>Invoice</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($transactions as $trx)
-                                    <tr>
-                                        <td>{{ $trx->created_at->format('d M Y') }}</td>
-                                        <td>#TRX-{{ str_pad($trx->id, 5, '0', STR_PAD_LEFT) }}</td>
-                                        <td>
-                                            @if($trx->property)
-                                                <a href="{{ route('properties.show', $trx->property->id) }}"
-                                                    target="_blank">{{ $trx->property->name }}</a>
+                                <tr>
+                                    <td>{{ $trx->created_at->format('d M Y') }}</td>
+                                    <td>#TRX-{{ str_pad($trx->id, 5, '0', STR_PAD_LEFT) }}</td>
+                                    <td>
+                                        @if($trx->property)
+                                            <a href="{{ route('properties.show', $trx->property->id) }}"
+                                                target="_blank">{{ $trx->property->name }}</a>
+                                        @else
+                                            <span class="text-muted">Deleted Property</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $trx->user->name ?? 'Unknown' }}</td>
+                                    <td data-order="{{ $trx->amount }}">{{ 'Rp ' . number_format($trx->amount, 0, ',', '.') }}
+                                    </td>
+                                    <td>
+                                        @php
+                                            $statusClass = $trx->status == 'accepted' ? 'badge-success' : ($trx->status == 'leading' ? 'badge-warning' : 'badge-secondary');
+                                            $statusLabel = $trx->status == 'accepted' ? 'ACCEPTED' : ($trx->status == 'leading' ? 'LEADING' : 'OUTBID');
+                                        @endphp
+                                        <span class="badge {{ $statusClass }}">
+                                            {{ $statusLabel }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if($trx->hasInvoice())
+                                            <div>
+                                                <strong>{{ $trx->invoice_number }}</strong><br>
+                                                <small class="text-muted">
+                                                    Total: Rp {{ number_format($trx->total_amount, 0, ',', '.') }}
+                                                </small><br>
+                                                <span class="badge {{ $trx->getStatusBadgeClass() }} mt-1">
+                                                    {{ $trx->getInvoiceStatus() }}
+                                                </span>
+                                            </div>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            @if($trx->status === 'accepted')
+                                                @if(!$trx->hasInvoice())
+                                                    <!-- Generate Invoice Button -->
+                                                    <a href="{{ route('backoffice.invoices.generate', $trx->id) }}"
+                                                        class="btn btn-sm btn-primary" title="Generate Invoice">
+                                                        <i class="fas fa-file-invoice"></i>
+                                                    </a>
+                                                @else
+                                                    <!-- Download Invoice Button -->
+                                                    <a href="{{ route('backoffice.invoices.generate', $trx->id) }}"
+                                                        class="btn btn-sm btn-info" title="Download Invoice">
+                                                        <i class="fas fa-download"></i>
+                                                    </a>
+
+                                                    @if(!$trx->isPaid())
+                                                        <!-- Mark as Paid Button -->
+                                                        <button type="button" class="btn btn-sm btn-success"
+                                                            onclick="markAsPaid({{ $trx->id }})" title="Mark as Paid">
+                                                            <i class="fas fa-check-circle"></i>
+                                                        </button>
+
+                                                        <!-- Cancel Invoice Button -->
+                                                        <button type="button" class="btn btn-sm btn-danger"
+                                                            onclick="cancelInvoice({{ $trx->id }})" title="Cancel Invoice">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    @else
+                                                        <span class="badge badge-success ms-2">
+                                                            <i class="fas fa-check"></i> Paid
+                                                        </span>
+                                                    @endif
+                                                @endif
                                             @else
-                                                <span class="text-muted">Deleted Property</span>
+                                                <span class="text-muted">-</span>
                                             @endif
-                                        </td>
-                                        <td>{{ $trx->user->name ?? 'Unknown' }}</td>
-                                        <td data-order="{{ $trx->amount }}">{{ 'Rp ' . number_format($trx->amount, 0, ',', '.') }}
-                                        </td>
-                                        <td>
-                                @php
-                                    $statusClass = $trx->status == 'accepted' ? 'badge-success' : ($trx->status == 'leading' ? 'badge-warning' : 'badge-secondary');
-                                    $statusLabel = $trx->status == 'accepted' ? 'ACCEPTED' : ($trx->status == 'leading' ? 'LEADING' : 'OUTBID');
-                                @endphp
-                                            <span class="badge {{ $statusClass }}">
-                                                {{ $statusLabel }}
-                                            </span>
-                                        </td>
-                                    </tr>
+                                        </div>
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -247,8 +303,8 @@
                 filterInfo += '_filtered';
             @endif
 
-                // Initialize DataTable with enhanced configuration
-                var table = $('#transaction-table').DataTable({
+                        // Initialize DataTable with enhanced configuration
+                        var table = $('#transaction-table').DataTable({
                 "pageLength": 25,
                 "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 "order": [[0, "desc"]], // Sort by date descending (newest first)
@@ -260,7 +316,7 @@
                         text: '<i class="fa fa-copy"></i> Copy',
                         className: 'btn btn-info btn-sm',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5],
+                            columns: [0, 1, 2, 3, 4, 5, 6],
                             format: {
                                 body: function (data, row, column, node) {
                                     // Remove HTML tags for clean export
@@ -272,10 +328,10 @@
                     },
                     {
                         extend: 'excel',
-                        text: '<i class="fa fa-file-excel"></i> Excel',
+                        text: '\u003ci class="fa fa-file-excel"\u003e\u003c/i\u003e Excel',
                         className: 'btn btn-success btn-sm',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5],
+                            columns: [0, 1, 2, 3, 4, 5, 6],
                             format: {
                                 body: function (data, row, column, node) {
                                     // Clean HTML for property column
@@ -283,7 +339,7 @@
                                         return $(data).text();
                                     }
                                     // Clean badge HTML for status column
-                                    if (column === 5) {
+                                    if (column === 5 || column === 6) {
                                         return $(data).text();
                                     }
                                     return data;
@@ -295,16 +351,16 @@
                     },
                     {
                         extend: 'pdf',
-                        text: '<i class="fa fa-file-pdf"></i> PDF',
+                        text: '\u003ci class="fa fa-file-pdf"\u003e\u003c/i\u003e PDF',
                         className: 'btn btn-danger btn-sm',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5],
+                            columns: [0, 1, 2, 3, 4, 5, 6],
                             format: {
                                 body: function (data, row, column, node) {
                                     if (column === 2) {
                                         return $(data).text();
                                     }
-                                    if (column === 5) {
+                                    if (column === 5 || column === 6) {
                                         return $(data).text();
                                     }
                                     return data;
@@ -322,21 +378,21 @@
                                 alignment: 'center',
                                 margin: [0, 0, 0, 10]
                             };
-                            doc.content[1].table.widths = ['12%', '15%', '23%', '20%', '15%', '15%'];
+                            doc.content[1].table.widths = ['10%', '12%', '20%', '18%', '12%', '12%', '16%'];
                         }
                     },
                     {
                         extend: 'print',
-                        text: '<i class="fa fa-print"></i> Print',
+                        text: '\u003ci class="fa fa-print"\u003e\u003c/i\u003e Print',
                         className: 'btn btn-secondary btn-sm',
                         exportOptions: {
-                            columns: [0, 1, 2, 3, 4, 5],
+                            columns: [0, 1, 2, 3, 4, 5, 6],
                             format: {
                                 body: function (data, row, column, node) {
                                     if (column === 2) {
                                         return $(data).text();
                                     }
-                                    if (column === 5) {
+                                    if (column === 5 || column === 6) {
                                         return $(data).text();
                                     }
                                     return data;
@@ -373,5 +429,110 @@
             // Add search placeholder
             $('div.dataTables_filter input').attr('placeholder', 'Search transactions...');
         });
+
+        // Mark Invoice as Paid
+        function markAsPaid(transactionId) {
+            swal({
+                title: 'Mark Invoice as Paid',
+                text: 'Enter payment method:',
+                content: {
+                    element: "input",
+                    attributes: {
+                        placeholder: "e.g., Bank Transfer, Cash, Credit Card",
+                        type: "text",
+                    },
+                },
+                buttons: {
+                    cancel: {
+                        text: 'Cancel',
+                        value: null,
+                        visible: true,
+                        className: 'btn btn-secondary',
+                        closeModal: true,
+                    },
+                    confirm: {
+                        text: 'Mark as Paid',
+                        value: true,
+                        visible: true,
+                        className: 'btn btn-success',
+                        closeModal: false
+                    }
+                }
+            }).then((paymentMethod) => {
+                if (paymentMethod) {
+                    if (!paymentMethod.trim()) {
+                        swal("Error", "Payment method is required!", "error");
+                        return;
+                    }
+
+                    // Create and submit form
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/backoffice/invoices/${transactionId}/mark-paid`;
+
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfToken);
+
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = 'payment_method';
+                    methodInput.value = paymentMethod;
+                    form.appendChild(methodInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+
+        // Cancel Invoice
+        function cancelInvoice(transactionId) {
+            swal({
+                title: 'Are you sure?',
+                text: "This will cancel the invoice and remove all invoice data!",
+                icon: 'warning',
+                buttons: {
+                    cancel: {
+                        text: 'No, keep it',
+                        value: null,
+                        visible: true,
+                        className: 'btn btn-secondary',
+                        closeModal: true,
+                    },
+                    confirm: {
+                        text: 'Yes, cancel it!',
+                        value: true,
+                        visible: true,
+                        className: 'btn btn-danger',
+                        closeModal: true
+                    }
+                }
+            }).then((willDelete) => {
+                if (willDelete) {
+                    // Create and submit form
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/backoffice/invoices/${transactionId}/cancel`;
+
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfToken);
+
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
     </script>
 @endsection

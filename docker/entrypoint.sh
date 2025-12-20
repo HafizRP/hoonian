@@ -11,9 +11,15 @@ echo "DB_HOST: $DB_HOST"
 echo "DB_PORT: $DB_PORT"
 echo "DB_DATABASE: $DB_DATABASE"
 echo "DB_USERNAME: $DB_USERNAME"
-echo "DB_PASSWORD: $DB_PASSWORD"
 echo "------------------------------------------------"
 
+# Wait for database to be ready
+echo "Waiting for database to be ready..."
+until php artisan db:show 2>/dev/null; do
+    echo "Database is unavailable - sleeping"
+    sleep 2
+done
+echo "Database is ready!"
 
 # Set proper permissions for Laravel directories
 echo "Setting permissions for storage and cache directories..."
@@ -26,6 +32,10 @@ if [ ! -L /var/www/public/storage ]; then
     php artisan storage:link
 fi
 
+# Run migrations
+echo "Running database migrations..."
+php artisan migrate --force
+
 # Clear and cache configuration for production
 echo "Optimizing Laravel configuration..."
 php artisan config:clear
@@ -33,7 +43,7 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-echo "Laravel setup complete. Starting services..."
+echo "Laravel setup complete. Starting PHP-FPM..."
 
-# Start supervisor to run PHP-FPM and Nginx
-exec /usr/bin/supervisord -c /etc/supervisord.conf
+# Execute the CMD (php-fpm)
+exec "$@"

@@ -1,37 +1,84 @@
-version: '3'
+version: '3.8'
+
 services:
-    app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        image: hoonian-app
-        container_name: hoonian-app
-        restart: unless-stopped
-        tty: true
-        ports:
-            - "8004:80"
-        environment:
-            # Database configuration - update these with your external database credentials
-            DB_CONNECTION: mysql
-            DB_HOST: ${DB_HOST}
-            DB_PORT: ${DB_PORT:-3306}
-            DB_DATABASE: ${DB_DATABASE}
-            DB_USERNAME: ${DB_USERNAME}
-            DB_PASSWORD: ${DB_PASSWORD}
-            # App configuration
-            APP_NAME: ${APP_NAME:-Laravel}
-            APP_ENV: ${APP_ENV:-production}
-            APP_KEY: ${APP_KEY}
-            APP_DEBUG: ${APP_DEBUG:-false}
-            APP_URL: ${APP_URL:-http://localhost:8000}
-        extra_hosts:
-            - "host.docker.internal:host-gateway"
-        volumes:
-            - ./storage:/var/www/storage
-            - ./bootstrap/cache:/var/www/bootstrap/cache
-        networks:
-            - app-network
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hoonian-app
+    container_name: hoonian-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      # Only mount storage for persistence
+      - storage-data:/var/www/storage
+    networks:
+      - hoonian-network
+    depends_on:
+      - db
+      - redis
+    environment:
+      APP_NAME: "Hoonian"
+      APP_ENV: production
+      APP_KEY: "${APP_KEY}"
+      APP_DEBUG: "false"
+      APP_URL: "${APP_URL:-http://localhost}"
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_DATABASE: hoonian
+      DB_USERNAME: root
+      DB_PASSWORD: "${DB_PASSWORD}"
+      REDIS_HOST: redis
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      # Google OAuth
+      GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
+      GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
+      GOOGLE_REDIRECT_URI: "${GOOGLE_REDIRECT_URI}"
+
+  nginx:
+    image: nginx:alpine
+    container_name: hoonian-nginx
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8004}:80"
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./public:/var/www/public:ro
+    networks:
+      - hoonian-network
+    depends_on:
+      - app
+
+  db:
+    image: mariadb:10.11
+    container_name: hoonian-db
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    environment:
+      MARIADB_DATABASE: hoonian
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD}"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - hoonian-network
+
+  redis:
+    image: redis:alpine
+    container_name: hoonian-redis
+    restart: unless-stopped
+    networks:
+      - hoonian-network
 
 networks:
-    app-network:
-        driver: bridge
+  hoonian-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
+  storage-data:
+    driver: local

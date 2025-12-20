@@ -1,66 +1,284 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏠 Hoonian - Property Marketplace & Bidding Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Hoonian adalah platform marketplace properti dengan sistem bidding yang memungkinkan pengguna untuk menawar properti secara real-time dan menghasilkan invoice otomatis untuk transaksi yang berhasil.
 
-## About Laravel
+## ✨ Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 🏘️ Property Management
+- **Property Listings**: Browse dan search properti
+- **Property Details**: Informasi lengkap properti dengan galeri foto
+- **Property Types**: Rumah, Apartemen, Tanah, dll
+- **Owner Management**: Kelola properti yang Anda miliki
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 💰 Bidding System
+- **Real-time Bidding**: Sistem penawaran real-time
+- **Bid Status**: Leading, Outbid, Accepted
+- **Bid Management**: Kelola bid masuk dan keluar
+- **Auto Status Update**: Status otomatis berubah saat ada bid baru
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 📄 Invoice System
+- **Auto Generate**: Invoice otomatis untuk transaksi accepted
+- **PDF Export**: Download invoice dalam format PDF professional
+- **Tax Calculation**: Perhitungan pajak otomatis (10%)
+- **Payment Tracking**: Track status pembayaran
+- **Invoice Status**: Draft, Sent, Paid, Overdue
 
-## Learning Laravel
+### 👥 User Management
+- **User Registration**: Daftar dengan email atau Google OAuth
+- **User Profiles**: Kelola profil pengguna
+- **Role Management**: Admin dan User roles
+- **Google OAuth**: Login cepat dengan Google
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🎛️ Admin Dashboard
+- **Dashboard Analytics**: Statistik transaksi dan properti
+- **User Management**: Kelola semua user
+- **Property Management**: Kelola semua properti
+- **Transaction Management**: Monitor semua transaksi
+- **Invoice Management**: Generate dan kelola invoice
+- **DataTables**: Export data ke Excel, PDF, Print
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🛠️ Tech Stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Backend
+- **Laravel 10**: PHP Framework
+- **PHP 8.2**: Programming Language
+- **MariaDB 10.11**: Database
+- **Redis**: Cache & Session Storage
 
-## Laravel Sponsors
+### Frontend
+- **Blade Templates**: Laravel templating engine
+- **Bootstrap 5**: CSS Framework
+- **jQuery**: JavaScript library
+- **DataTables**: Advanced tables
+- **SweetAlert**: Beautiful alerts
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Libraries
+- **Laravel Socialite**: Google OAuth
+- **DomPDF**: PDF generation
+- **Laravel Sanctum**: API authentication
 
-### Premium Partners
+### DevOps
+- **Docker**: Containerization
+- **Docker Compose**: Multi-container orchestration
+- **Nginx**: Web server
+- **PHP-FPM**: PHP processor
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 📦 Installation
 
-## Contributing
+### Local Development
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+#### Prerequisites
+- PHP 8.2+
+- Composer
+- Node.js & NPM
+- MySQL/MariaDB
+- Redis (optional)
 
-## Code of Conduct
+#### Steps
+```bash
+# Clone repository
+git clone <repository-url>
+cd hoonian
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Install dependencies
+composer install
+npm install
 
-## Security Vulnerabilities
+# Setup environment
+cp .env.example .env
+php artisan key:generate
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Configure database in .env
+# DB_DATABASE=hoonian
+# DB_USERNAME=root
+# DB_PASSWORD=your-password
 
-## License
+# Run migrations
+php artisan migrate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Seed database (optional)
+php artisan db:seed
+
+# Create storage link
+php artisan storage:link
+
+# Start development server
+php artisan serve
+```
+
+Access: http://localhost:8000
+
+### Docker Deployment
+
+Lihat dokumentasi lengkap di [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
+
+#### Quick Start
+```bash
+# Setup environment
+cp .env.example .env
+
+# Edit .env dengan konfigurasi Docker
+# DB_HOST=db
+# REDIS_HOST=redis
+
+# Build and start
+docker-compose build
+docker-compose up -d
+
+# Run migrations
+docker-compose exec app php artisan migrate --force
+```
+
+Access: http://localhost:8004
+
+## 📚 Documentation
+
+- **[Invoice System](INVOICE_SYSTEM.md)**: Dokumentasi lengkap sistem invoice
+- **[Docker Deployment](DOCKER_DEPLOYMENT.md)**: Panduan deployment dengan Docker
+
+## 🔑 Default Credentials
+
+Setelah seeding database:
+
+**Admin Account:**
+- Email: admin@hoonian.com
+- Password: password
+
+**User Account:**
+- Email: user@hoonian.com
+- Password: password
+
+⚠️ **Penting**: Ubah password default di production!
+
+## 🎯 Usage Guide
+
+### Untuk User
+
+1. **Register/Login**
+   - Daftar dengan email atau Google OAuth
+   - Verifikasi email (jika diperlukan)
+
+2. **Browse Properties**
+   - Lihat daftar properti
+   - Filter berdasarkan type, harga, lokasi
+   - Lihat detail properti
+
+3. **Place Bid**
+   - Klik "Place Bid" pada properti
+   - Bid otomatis menggunakan harga properti
+   - Status bid: Leading/Outbid
+
+4. **Manage Bids**
+   - Lihat bid yang masuk (selling)
+   - Lihat bid yang keluar (buying)
+   - Accept/Decline bid
+
+### Untuk Admin
+
+1. **Dashboard**
+   - Lihat statistik keseluruhan
+   - Monitor aktivitas terbaru
+
+2. **Manage Properties**
+   - CRUD properti
+   - Upload gambar properti
+   - Set status properti
+
+3. **Manage Transactions**
+   - Monitor semua transaksi
+   - Filter berdasarkan status, tanggal
+   - Export data
+
+4. **Generate Invoice**
+   - Pilih transaksi accepted
+   - Klik "Generate Invoice"
+   - PDF otomatis ter-download
+   - Mark as paid setelah pembayaran
+
+## 🔧 Configuration
+
+### Environment Variables
+
+```env
+# App
+APP_NAME=Hoonian
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=http://localhost
+
+# Database
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=hoonian
+DB_USERNAME=root
+DB_PASSWORD=
+
+# Google OAuth
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=
+```
+
+### Invoice Tax Rate
+
+Edit di `app/Http/Controllers/InvoiceController.php`:
+```php
+$taxRate = 10; // 10% tax
+```
+
+## 🚀 Deployment
+
+### Production Checklist
+
+- [ ] Set `APP_ENV=production`
+- [ ] Set `APP_DEBUG=false`
+- [ ] Generate strong `APP_KEY`
+- [ ] Configure database
+- [ ] Setup mail server
+- [ ] Configure Google OAuth
+- [ ] Setup SSL/TLS
+- [ ] Configure backups
+- [ ] Setup monitoring
+- [ ] Change default passwords
+
+### Optimization
+
+```bash
+# Clear caches
+php artisan optimize:clear
+
+# Cache config, routes, views
+php artisan optimize
+
+# Generate autoload
+composer dump-autoload --optimize
+```
+
+## 📸 Screenshots
+
+(Add screenshots here)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## 📝 License
+
+This project is proprietary software.
+
+## 👨‍💻 Developer
+
+Developed by [Your Name]
+
+## 📧 Support
+
+For support, email support@hoonian.com
+
+---
+
+**Made with ❤️ using Laravel**

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,4 +73,11 @@ Route::middleware(['auth']) // Removed admin middleware
         Route::get('/properties/edit/{id}', [PropertyController::class, 'backofficeEdit'])->name('properties.edit');
         Route::delete('/properties/{property}', [PropertyController::class, 'destroy'])->name('properties.destroy');
         Route::get('/transactions', [TransactionController::class, 'backofficeList'])->name('transactions');
-});
+
+        // Invoice Routes (Simplified)
+        Route::prefix('invoices')->name('invoices.')->group(function () {
+            Route::get('/generate/{transaction}', [InvoiceController::class, 'generateAndDownload'])->name('generate');
+            Route::post('/{id}/mark-paid', [InvoiceController::class, 'markAsPaid'])->name('markPaid');
+            Route::delete('/{id}/cancel', [InvoiceController::class, 'cancel'])->name('cancel');
+        });
+    });
