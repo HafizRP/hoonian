@@ -65,6 +65,23 @@ Hoonian adalah platform marketplace properti dengan sistem bidding yang memungki
 
 ## 📦 Installation
 
+### 🚀 Quick Start (Recommended)
+
+**Untuk deployment di server, baca:** [`SERVER_DEPLOYMENT.md`](SERVER_DEPLOYMENT.md) ⭐
+
+```bash
+# 1. Setup environment
+cp .env.example .env
+nano .env  # Edit konfigurasi
+
+# 2. Jalankan dengan Docker
+chmod +x docker.sh
+./docker.sh setup
+
+# 3. Akses aplikasi
+# http://localhost:8004
+```
+
 ### Local Development
 
 #### Prerequisites
@@ -110,31 +127,49 @@ Access: http://localhost:8000
 
 ### Docker Deployment
 
-Lihat dokumentasi lengkap di [DOCKER_DEPLOYMENT.md](DOCKER_DEPLOYMENT.md)
+**📖 Dokumentasi Lengkap:**
+- **[Quick Start](QUICKSTART.md)** - Panduan singkat 5 menit
+- **[Server Deployment](SERVER_DEPLOYMENT.md)** - Panduan lengkap deployment di server (Bahasa Indonesia)
+- **[Docker Deployment](DOCKER_DEPLOYMENT.md)** - Dokumentasi detail Docker
 
-#### Quick Start
+#### Quick Start dengan Docker
 ```bash
 # Setup environment
 cp .env.example .env
 
 # Edit .env dengan konfigurasi Docker
-# DB_HOST=db
+# DB_HOST=mariadb (atau host.docker.internal untuk external DB)
 # REDIS_HOST=redis
 
 # Build and start
+./docker.sh setup
+
+# Atau manual:
 docker compose build
 docker compose up -d
-
-# Run migrations
 docker compose exec app php artisan migrate --force
 ```
 
 Access: http://localhost:8004
 
+#### Docker Helper Commands
+```bash
+./docker.sh start       # Start containers
+./docker.sh stop        # Stop containers
+./docker.sh logs        # View logs
+./docker.sh migrate     # Run migrations
+./docker.sh shell       # Access container
+./docker.sh help        # Show all commands
+```
+
 ## 📚 Documentation
 
-- **[Invoice System](INVOICE_SYSTEM.md)**: Dokumentasi lengkap sistem invoice
-- **[Docker Deployment](DOCKER_DEPLOYMENT.md)**: Panduan deployment dengan Docker
+- **[🚀 Quick Start](QUICKSTART.md)** - Mulai dalam 5 menit
+- **[🖥️ Server Deployment](SERVER_DEPLOYMENT.md)** - Panduan deployment lengkap (ID)
+- **[🐳 Docker Deployment](DOCKER_DEPLOYMENT.md)** - Detail Docker setup
+- **[📄 Invoice System](INVOICE_SYSTEM.md)** - Sistem invoice & PDF
+- **[🗄️ External Database](EXTERNAL_DATABASE.md)** - Setup database eksternal
+- **[⚡ Quick Deploy](QUICK_DEPLOY.md)** - Deploy cepat ke server
 
 ## 🔑 Default Credentials
 

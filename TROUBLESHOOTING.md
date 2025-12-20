@@ -1,213 +1,508 @@
-# 🔧 Troubleshooting Guide - Database Connection Issues
+# 🔧 Troubleshooting Guide - Hoonian
 
-## Problem: Database Connection Timeout
+Panduan lengkap untuk mengatasi masalah umum saat deployment.
 
-If you see this error:
-```
-Database is unavailable - sleeping
-Database is unavailable - sleeping
-...
-ERROR: Database did not become ready in time
-```
+## 🚨 Masalah Umum & Solusi
 
-## Solutions
+### 1. Container Tidak Bisa Start
 
-### 1. Check Database Container Status
+#### Error: "port is already allocated"
 ```bash
-# Check if database container is running
-sudo docker ps | grep hoonian-db
+# Cek port yang dipakai
+sudo netstat -tulpn | grep 8004
 
-# If not running, check logs
-sudo docker compose logs db
+# Solusi 1: Ganti port di .env
+nano .env
+# Ubah: APP_PORT=8005
+
+# Solusi 2: Stop container yang pakai port tersebut
+docker ps
+docker stop <container-id>
+
+# Restart
+./docker.sh restart
 ```
 
-### 2. Verify Database Password
-Make sure `DB_PASSWORD` in `.env` matches in both places:
-```env
-# In .env file
-DB_PASSWORD=your-password-here
-```
-
-The password must be set before starting containers!
-
-### 3. Start Database First
+#### Error: "no space left on device"
 ```bash
-# Stop all containers
-sudo docker compose down
+# Cek disk usage
+df -h
+docker system df
 
-# Start database first
-sudo docker compose up -d db
+# Clean up Docker
+docker system prune -a
+docker volume prune
 
-# Wait 10 seconds
-sleep 10
-
-# Check database is ready
-sudo docker compose exec db mysql -u root -p
-
-# Then start other containers
-sudo docker compose up -d
+# Remove unused images
+docker image prune -a
 ```
 
-### 4. Manual Database Check
+### 2. Database Connection Error
+
+#### Error: "SQLSTATE[HY000] [2002] Connection refused"
 ```bash
-# Test database connection from app container
-sudo docker compose exec app mysqladmin ping -h db -P 3306 -u root -p
+# Cek 1: Database container running?
+docker ps | grep mariadb
 
-# If successful, you'll see: mysqld is alive
+# Cek 2: Environment variables benar?
+./docker.sh shell
+env | grep DB_
+
+# Cek 3: Database host benar?
+# Jika pakai external DB: DB_HOST=host.docker.internal
+# Jika pakai Docker DB: DB_HOST=mariadb
+
+# Cek 4: Test koneksi manual
+./docker.sh shell
+php artisan db:show
 ```
 
-### 5. Rebuild Containers
+#### Error: "Access denied for user"
 ```bash
-# Stop and remove containers
-sudo docker compose down
+# Password salah di .env
+nano .env
+# Pastikan DB_PASSWORD sama dengan database password
 
-# Remove volumes (WARNING: This deletes database data!)
-sudo docker volume rm hoonian_dbdata
-
-# Rebuild
-sudo docker compose build --no-cache
-
-# Start fresh
-sudo docker compose up -d
+# Test login manual
+mysql -h 127.0.0.1 -P 3306 -u root -p
+# Masukkan password yang benar
 ```
 
-### 6. Check Network
+#### Error: "Unknown database 'hoonian'"
 ```bash
-# Verify containers are in same network
-sudo docker network inspect hoonian_hoonian-network
+# Database belum dibuat
+mysql -u root -p
+CREATE DATABASE hoonian CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+EXIT;
 
-# Should show both 'app' and 'db' containers
+# Restart container
+./docker.sh restart
 ```
 
-### 7. Increase Wait Time
-Edit `docker/entrypoint.sh` and increase max_attempts:
-```bash
-max_attempts=60  # Increase from 30 to 60
-```
+### 3. Migration Error
 
-Then rebuild:
-```bash
-sudo docker compose build app
-sudo docker compose up -d
-```
-
-### 8. Skip Auto Migration
-If you want to start containers without auto migration:
-
-Comment out migration in `docker/entrypoint.sh`:
+#### Error: "Migration table not found"
 ```bash
 # Run migrations
-# echo "Running database migrations..."
-# php artisan migrate --force
+./docker.sh migrate
+
+# Jika masih error, fresh migration
+./docker.sh fresh  # WARNING: Hapus semua data!
 ```
 
-Then run migration manually after containers start:
+#### Error: "Syntax error in migration"
 ```bash
-sudo docker compose exec app php artisan migrate --force
+# Lihat error detail
+./docker.sh logs app
+
+# Rollback migration
+./docker.sh shell
+php artisan migrate:rollback
+
+# Fix migration file, lalu migrate lagi
+./docker.sh migrate
 ```
 
-## Common Causes
+### 4. Permission Error
 
-### ❌ Wrong Password
-- `.env` file has wrong `DB_PASSWORD`
-- Password contains special characters that need escaping
-
-### ❌ Database Not Started
-- Database container failed to start
-- Check: `sudo docker compose logs db`
-
-### ❌ Network Issues
-- Containers not in same network
-- Firewall blocking internal communication
-
-### ❌ Port Conflict
-- Port 3308 already in use
-- Change `DB_EXTERNAL_PORT` in `.env`
-
-## Quick Fix Commands
-
+#### Error: "Permission denied" di storage/logs
 ```bash
-# 1. Stop everything
-sudo docker compose down
+# Masuk ke container
+./docker.sh shell
 
-# 2. Check .env has DB_PASSWORD set
-cat .env | grep DB_PASSWORD
+# Fix permission
+chmod -R 775 storage bootstrap/cache
+chown -R www-data:www-data storage bootstrap/cache
 
-# 3. Start database only
-sudo docker compose up -d db
-
-# 4. Wait and check
-sleep 10
-sudo docker compose logs db
-
-# 5. Test connection
-sudo docker compose exec db mysql -u root -p
-# Enter your DB_PASSWORD
-
-# 6. If successful, start app
-sudo docker compose up -d app
-
-# 7. Check app logs
-sudo docker compose logs -f app
+# Atau rebuild (permission sudah di-set di Dockerfile)
+./docker.sh rebuild
 ```
 
-## Prevention
-
-### Always Set DB_PASSWORD Before Starting
+#### Error: "Failed to create symbolic link"
 ```bash
-# In .env
-DB_PASSWORD=MySecurePassword123!
+# Create storage link manual
+./docker.sh shell
+php artisan storage:link
+
+# Atau hapus link lama dulu
+rm -f public/storage
+php artisan storage:link
 ```
 
-### Start Containers in Order
+### 5. Nginx 502 Bad Gateway
+
+#### Penyebab: PHP-FPM tidak running
 ```bash
-# 1. Database first
-sudo docker compose up -d db redis
+# Cek PHP-FPM
+./docker.sh shell
+ps aux | grep php-fpm
 
-# 2. Wait
-sleep 10
+# Jika tidak ada, restart container
+exit
+./docker.sh restart app
 
-# 3. Then app
-sudo docker compose up -d app nginx
+# Cek logs
+./docker.sh logs app
 ```
 
-### Use Health Checks
-The database container has built-in health checks. Wait for it to be healthy:
+#### Penyebab: Nginx config salah
 ```bash
-# Check health status
-sudo docker ps
+# Test nginx config
+docker compose exec nginx nginx -t
 
-# Look for "healthy" in STATUS column
+# Lihat logs
+./docker.sh logs nginx
+
+# Restart nginx
+docker compose restart nginx
 ```
 
-## Still Not Working?
+### 6. File Upload Tidak Muncul
 
-### Check Database Logs
+#### Storage link tidak ada
 ```bash
-sudo docker compose logs db --tail=100
+# Create storage link
+./docker.sh shell
+php artisan storage:link
+
+# Cek apakah link sudah ada
+ls -la public/ | grep storage
 ```
 
-### Check App Logs
+#### Permission salah
 ```bash
-sudo docker compose logs app --tail=100
+./docker.sh shell
+chmod -R 775 storage/app/public
+chown -R www-data:www-data storage/app/public
 ```
 
-### Manual Connection Test
+### 7. Cache Issues
+
+#### Config cache outdated
 ```bash
-# From host machine
-mysql -h 127.0.0.1 -P 3308 -u root -p
-# Enter DB_PASSWORD
+# Clear semua cache
+./docker.sh clear
 
-# If this works, the issue is with app container
+# Atau manual
+./docker.sh shell
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
+php artisan view:clear
+
+# Rebuild cache
+php artisan optimize
 ```
 
-### Contact Support
-If none of these work, provide:
-1. Output of `sudo docker compose logs db`
-2. Output of `sudo docker compose logs app`
-3. Your `.env` file (remove sensitive data)
-4. Output of `sudo docker ps`
+#### Redis connection error
+```bash
+# Cek Redis container
+docker ps | grep redis
+
+# Restart Redis
+docker compose restart redis
+
+# Test Redis
+./docker.sh shell
+php artisan tinker
+# >>> Cache::put('test', 'value', 60);
+# >>> Cache::get('test');
+```
+
+### 8. Build Error
+
+#### Error: "composer install failed"
+```bash
+# Clear composer cache
+docker compose run --rm app composer clear-cache
+
+# Rebuild tanpa cache
+./docker.sh rebuild
+```
+
+#### Error: "Could not find package"
+```bash
+# Update composer
+./docker.sh shell
+composer update
+
+# Atau rebuild
+exit
+./docker.sh rebuild
+```
+
+### 9. Invoice PDF Error
+
+#### Error: "Class 'DomPDF' not found"
+```bash
+# Install DomPDF
+./docker.sh composer require barryvdh/laravel-dompdf
+
+# Clear cache
+./docker.sh clear
+```
+
+#### PDF tidak ter-generate
+```bash
+# Cek logs
+./docker.sh logs app
+
+# Test manual
+./docker.sh shell
+php artisan tinker
+# >>> $pdf = PDF::loadView('test');
+# >>> $pdf->save('test.pdf');
+```
+
+### 10. Google OAuth Error
+
+#### Error: "Invalid redirect URI"
+```bash
+# Pastikan GOOGLE_REDIRECT_URI benar di .env
+nano .env
+# GOOGLE_REDIRECT_URI=http://your-domain:8004/auth/google/callback
+
+# Clear config cache
+./docker.sh clear
+```
+
+#### Error: "Invalid client"
+```bash
+# Cek GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET
+nano .env
+
+# Pastikan credentials benar di Google Console
+# https://console.cloud.google.com/apis/credentials
+```
+
+## 🔍 Debugging Tools
+
+### View Logs
+```bash
+# All logs
+./docker.sh logs
+
+# Specific service
+./docker.sh logs app
+./docker.sh logs nginx
+./docker.sh logs redis
+
+# Follow logs (real-time)
+./docker.sh logs -f app
+
+# Last 100 lines
+docker compose logs --tail=100 app
+```
+
+### Access Container Shell
+```bash
+# App container
+./docker.sh shell
+
+# Nginx container
+docker compose exec nginx sh
+
+# Redis container
+docker compose exec redis redis-cli
+```
+
+### Check Container Status
+```bash
+# List containers
+docker ps
+
+# Container details
+docker inspect hoonian-app
+
+# Resource usage
+docker stats
+
+# Health check
+docker ps --format "table {{.Names}}\t{{.Status}}"
+```
+
+### Database Debugging
+```bash
+# Access database
+./docker.sh db
+
+# Or manual
+mysql -h 127.0.0.1 -P 3306 -u root -p hoonian
+
+# Show tables
+SHOW TABLES;
+
+# Describe table
+DESCRIBE users;
+
+# Check data
+SELECT * FROM users LIMIT 5;
+```
+
+### Laravel Debugging
+```bash
+# Tinker (Laravel REPL)
+./docker.sh shell
+php artisan tinker
+
+# Test database
+>>> DB::connection()->getPdo();
+
+# Test cache
+>>> Cache::put('test', 'value');
+>>> Cache::get('test');
+
+# Test config
+>>> config('app.name');
+>>> config('database.default');
+```
+
+## 📊 Health Check
+
+### Quick Health Check
+```bash
+# 1. Containers running?
+docker ps
+
+# 2. Database accessible?
+./docker.sh shell
+php artisan db:show
+
+# 3. Application accessible?
+curl http://localhost:8004
+
+# 4. Storage writable?
+ls -la storage/
+
+# 5. Cache working?
+php artisan cache:clear
+```
+
+### Full System Check
+```bash
+# Run all checks
+./docker.sh shell
+
+# 1. PHP version
+php -v
+
+# 2. Extensions
+php -m | grep -E 'pdo_mysql|redis|gd|zip'
+
+# 3. Composer
+composer --version
+
+# 4. Laravel
+php artisan --version
+
+# 5. Database
+php artisan db:show
+
+# 6. Config
+php artisan config:show
+
+# 7. Routes
+php artisan route:list
+```
+
+## 🆘 Emergency Recovery
+
+### Reset Everything
+```bash
+# WARNING: Ini akan hapus SEMUA data!
+
+# 1. Stop containers
+./docker.sh stop
+
+# 2. Remove containers & volumes
+docker compose down -v
+
+# 3. Clean Docker
+docker system prune -a
+
+# 4. Rebuild from scratch
+./docker.sh setup
+```
+
+### Backup Before Reset
+```bash
+# 1. Backup database
+./docker.sh backup
+
+# 2. Backup storage
+tar -czf storage-backup.tar.gz storage/
+
+# 3. Backup .env
+cp .env .env.backup
+
+# Now safe to reset
+```
+
+### Restore After Reset
+```bash
+# 1. Setup fresh
+./docker.sh setup
+
+# 2. Restore .env
+cp .env.backup .env
+
+# 3. Restore database
+./docker.sh restore backup-20251220.sql
+
+# 4. Restore storage
+tar -xzf storage-backup.tar.gz
+
+# 5. Fix permissions
+./docker.sh shell
+chmod -R 775 storage
+```
+
+## 📞 Getting Help
+
+### Check Documentation
+1. `QUICKSTART.md` - Quick reference
+2. `SERVER_DEPLOYMENT.md` - Deployment guide
+3. `DOCKER_DEPLOYMENT.md` - Docker details
+4. `INVOICE_SYSTEM.md` - Invoice system
+
+### Common Commands
+```bash
+./docker.sh help          # Show all commands
+./docker.sh logs app      # View logs
+./docker.sh shell         # Access container
+./docker.sh status        # Check status
+```
+
+### Still Having Issues?
+
+1. **Check logs first:**
+   ```bash
+   ./docker.sh logs app
+   ```
+
+2. **Try rebuilding:**
+   ```bash
+   ./docker.sh rebuild
+   ```
+
+3. **Check environment:**
+   ```bash
+   ./docker.sh shell
+   env | grep -E 'DB_|APP_|REDIS_'
+   ```
+
+4. **Test components:**
+   ```bash
+   # Database
+   php artisan db:show
+   
+   # Cache
+   php artisan cache:clear
+   
+   # Config
+   php artisan config:show
+   ```
 
 ---
 
-**Most Common Fix:** Make sure `DB_PASSWORD` is set in `.env` before running `docker compose up`!
+**Masih ada masalah?** Buat issue di repository atau hubungi support.
