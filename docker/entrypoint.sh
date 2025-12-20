@@ -13,12 +13,21 @@ echo "DB_DATABASE: $DB_DATABASE"
 echo "DB_USERNAME: $DB_USERNAME"
 echo "------------------------------------------------"
 
-# Wait for database to be ready
+# Wait for database to be ready using mysqladmin ping
 echo "Waiting for database to be ready..."
-until php artisan db:show 2>/dev/null; do
-    echo "Database is unavailable - sleeping"
+max_attempts=30
+attempt=0
+
+until mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" -u"$DB_USERNAME" -p"$DB_PASSWORD" --silent 2>/dev/null; do
+    attempt=$((attempt + 1))
+    if [ $attempt -ge $max_attempts ]; then
+        echo "ERROR: Database did not become ready in time"
+        exit 1
+    fi
+    echo "Database is unavailable - sleeping (attempt $attempt/$max_attempts)"
     sleep 2
 done
+
 echo "Database is ready!"
 
 # Set proper permissions for Laravel directories

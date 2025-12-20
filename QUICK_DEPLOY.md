@@ -13,6 +13,16 @@ Your server already has:
 
 ## Quick Deploy Steps
 
+### 0. Prepare Database (First Time Only)
+```bash
+# Login to your existing MariaDB
+mysql -h 127.0.0.1 -P 3306 -u root -p
+
+# Create database
+CREATE DATABASE hoonian CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+EXIT;
+```
+
 ### 1. Upload Project to Server
 ```bash
 # On your local machine
@@ -47,26 +57,31 @@ APP_KEY=base64:YOUR_GENERATED_KEY_HERE
 APP_DEBUG=false
 APP_URL=http://your-server-ip:8004
 APP_PORT=8004
-DB_EXTERNAL_PORT=3308
 
+# External Database (using existing MariaDB on port 3306)
 DB_CONNECTION=mysql
-DB_HOST=db
+DB_HOST=host.docker.internal
 DB_PORT=3306
 DB_DATABASE=hoonian
 DB_USERNAME=root
-DB_PASSWORD=your-secure-password-here
+DB_PASSWORD=your-mariadb-password
 
 REDIS_HOST=redis
 CACHE_DRIVER=redis
 SESSION_DRIVER=redis
 ```
 
+> ⚠️ **IMPORTANT**: 
+> - Use `DB_HOST=host.docker.internal` to access host's database from Docker
+> - `DB_PASSWORD` must match your existing MariaDB root password
+> - Database `hoonian` must be created first (see step 0)
+
 ### 4. Build and Start
 ```bash
 # Build images
 sudo docker compose build
 
-# Start containers
+# Start containers (only app, nginx, redis - no database)
 sudo docker compose up -d
 
 # Check status
@@ -76,22 +91,27 @@ sudo docker ps
 You should see:
 - `hoonian-nginx` (port 8004)
 - `hoonian-app`
-- `hoonian-db` (port 3308)
 - `hoonian-redis`
+
+**Note:** No `hoonian-db` container - using existing MariaDB!
 
 ### 5. Run Migrations
 ```bash
-# Wait a few seconds for containers to be ready
-sleep 10
-
-# Run migrations
+# Migrations run automatically on container start
+# Or run manually:
 sudo docker compose exec app php artisan migrate --force
 
 # (Optional) Seed database
 sudo docker compose exec app php artisan db:seed --force
 ```
 
-### 6. Access Application
+### 6. Verify Database
+```bash
+# Check tables were created
+mysql -h 127.0.0.1 -P 3306 -u root -p hoonian -e "SHOW TABLES;"
+```
+
+### 7. Access Application
 Open browser: `http://your-server-ip:8004`
 
 ## Useful Commands
@@ -176,17 +196,20 @@ sudo docker compose exec app php artisan db:show
 sudo docker compose logs db
 ```
 
-## Current Containers on Server
+## Current Setup on Server
 
 After deployment, you'll have:
 
 | Container | Port | Service |
 |-----------|------|---------|
+| mariadb (standalone) | 3306 | **Shared Database** |
 | swap-hub-nginx | 5541 | Swap Hub |
-| swap-hub-db | 3307 | Swap Hub DB |
-| mariadb | 3306 | Standalone DB |
-| **hoonian-nginx** | **8004** | **Hoonian** |
-| **hoonian-db** | **3308** | **Hoonian DB** |
+| swap-hub-db | 3307 | Swap Hub DB (unused) |
+| **hoonian-nginx** | **8004** | **Hoonian Web** |
+| **hoonian-app** | **-** | **Hoonian App** |
+| **hoonian-redis** | **-** | **Hoonian Cache** |
+
+**Note:** Hoonian uses the standalone MariaDB on port 3306 (shared with other apps).
 
 ## Firewall Configuration
 

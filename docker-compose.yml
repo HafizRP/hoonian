@@ -15,7 +15,6 @@ services:
     networks:
       - hoonian-network
     depends_on:
-      - db
       - redis
     environment:
       APP_NAME: "Hoonian"
@@ -24,10 +23,10 @@ services:
       APP_DEBUG: "false"
       APP_URL: "${APP_URL:-http://localhost:8004}"
       DB_CONNECTION: mysql
-      DB_HOST: db
-      DB_PORT: "3306"
-      DB_DATABASE: hoonian
-      DB_USERNAME: root
+      DB_HOST: "${DB_HOST:-host.docker.internal}"
+      DB_PORT: "${DB_PORT:-3306}"
+      DB_DATABASE: "${DB_DATABASE:-hoonian}"
+      DB_USERNAME: "${DB_USERNAME:-root}"
       DB_PASSWORD: "${DB_PASSWORD}"
       REDIS_HOST: redis
       CACHE_DRIVER: redis
@@ -37,6 +36,8 @@ services:
       GOOGLE_CLIENT_ID: "${GOOGLE_CLIENT_ID}"
       GOOGLE_CLIENT_SECRET: "${GOOGLE_CLIENT_SECRET}"
       GOOGLE_REDIRECT_URI: "${GOOGLE_REDIRECT_URI}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   nginx:
     image: nginx:alpine
@@ -52,20 +53,6 @@ services:
     depends_on:
       - app
 
-  db:
-    image: mariadb:10.11
-    container_name: hoonian-db
-    restart: unless-stopped
-    ports:
-      - "${DB_EXTERNAL_PORT:-3308}:3306"
-    environment:
-      MARIADB_DATABASE: hoonian
-      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD}"
-    volumes:
-      - dbdata:/var/lib/mysql
-    networks:
-      - hoonian-network
-
   redis:
     image: redis:alpine
     container_name: hoonian-redis
@@ -78,7 +65,5 @@ networks:
     driver: bridge
 
 volumes:
-  dbdata:
-    driver: local
   storage-data:
     driver: local
