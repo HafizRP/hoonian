@@ -49,6 +49,7 @@ services:
     volumes:
       - ./docker/nginx/conf.d:/etc/nginx/conf.d
       - ./public:/var/www/public:ro
+      - storage-data:/var/www/storage:ro
     networks:
       - hoonian-network
     depends_on:
