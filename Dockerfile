@@ -106,15 +106,12 @@ RUN chown -R www-data:www-data \
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Switch to www-data user for better security
-USER www-data
-
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD php artisan db:show || exit 1
+    CMD php-fpm-healthcheck || exit 1
 
 # Use entrypoint script to handle Laravel setup
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

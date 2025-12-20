@@ -34,10 +34,15 @@ done
 
 echo "Database is ready!"
 
+# Set proper permissions for Laravel directories
+echo "Setting permissions for storage and cache directories..."
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache 2>/dev/null || true
+
 # Create storage link if it doesn't exist
 if [ ! -L /var/www/public/storage ]; then
     echo "Creating storage symlink..."
-    php artisan storage:link || echo "Warning: Could not create storage link (may already exist)"
+    php artisan storage:link 2>/dev/null || echo "Warning: Could not create storage link (may already exist)"
 fi
 
 # Run migrations
