@@ -63,22 +63,22 @@ php artisan key:generate
 ### 4. Build and Start
 ```bash
 # Build Docker images
-docker-compose build
+docker compose build
 
 # Start all containers
-docker-compose up -d
+docker compose up -d
 
 # Check container status
-docker-compose ps
+docker compose ps
 ```
 
 ### 5. Run Migrations
 ```bash
 # Run database migrations
-docker-compose exec app php artisan migrate --force
+docker compose exec app php artisan migrate --force
 
 # (Optional) Seed database
-docker-compose exec app php artisan db:seed --force
+docker compose exec app php artisan db:seed --force
 ```
 
 ### 6. Access Application
@@ -110,53 +110,53 @@ chmod +x docker.sh
 ### Start/Stop Containers
 ```bash
 # Start all containers
-docker-compose up -d
+docker compose up -d
 
 # Stop all containers
-docker-compose down
+docker compose down
 
 # Restart specific container
-docker-compose restart app
-docker-compose restart nginx
+docker compose restart app
+docker compose restart nginx
 
 # View logs
-docker-compose logs -f app
-docker-compose logs -f nginx
-docker-compose logs -f db
+docker compose logs -f app
+docker compose logs -f nginx
+docker compose logs -f db
 ```
 
 ### Access Container Shell
 ```bash
 # Access app container
-docker-compose exec app bash
+docker compose exec app bash
 
 # Access database
-docker-compose exec db mysql -u root -p hoonian
+docker compose exec db mysql -u root -p hoonian
 ```
 
 ## Laravel Commands in Docker
 
 ```bash
 # Run migrations
-docker-compose exec app php artisan migrate
+docker compose exec app php artisan migrate
 
 # Clear caches
-docker-compose exec app php artisan cache:clear
-docker-compose exec app php artisan config:clear
-docker-compose exec app php artisan route:clear
-docker-compose exec app php artisan view:clear
+docker compose exec app php artisan cache:clear
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan route:clear
+docker compose exec app php artisan view:clear
 
 # Optimize for production
-docker-compose exec app php artisan optimize
+docker compose exec app php artisan optimize
 
 # Create storage link
-docker-compose exec app php artisan storage:link
+docker compose exec app php artisan storage:link
 
 # Run queue worker
-docker-compose exec app php artisan queue:work
+docker compose exec app php artisan queue:work
 
 # Run tinker
-docker-compose exec app php artisan tinker
+docker compose exec app php artisan tinker
 ```
 
 ## Volumes & Data Persistence
@@ -174,10 +174,10 @@ docker volume inspect hoonian_dbdata
 docker volume inspect hoonian_storage-data
 
 # Backup database
-docker-compose exec db mysqldump -u root -p hoonian > backup.sql
+docker compose exec db mysqldump -u root -p hoonian > backup.sql
 
 # Restore database
-docker-compose exec -T db mysql -u root -p hoonian < backup.sql
+docker compose exec -T db mysql -u root -p hoonian < backup.sql
 ```
 
 ## Network Configuration
@@ -205,52 +205,52 @@ DB_PORT=3307
 ### Container tidak start
 ```bash
 # Check logs
-docker-compose logs app
-docker-compose logs nginx
-docker-compose logs db
+docker compose logs app
+docker compose logs nginx
+docker compose logs db
 
 # Rebuild containers
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
+docker compose down
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ### Permission Issues
 ```bash
 # Fix storage permissions
-docker-compose exec app chmod -R 775 storage bootstrap/cache
-docker-compose exec app chown -R www-data:www-data storage bootstrap/cache
+docker compose exec app chmod -R 775 storage bootstrap/cache
+docker compose exec app chown -R www-data:www-data storage bootstrap/cache
 ```
 
 ### Database Connection Issues
 ```bash
 # Check if database is ready
-docker-compose exec app php artisan db:show
+docker compose exec app php artisan db:show
 
 # Check database logs
-docker-compose logs db
+docker compose logs db
 
 # Connect to database manually
-docker-compose exec db mysql -u root -p
+docker compose exec db mysql -u root -p
 ```
 
 ### Nginx 502 Bad Gateway
 ```bash
 # Check if PHP-FPM is running
-docker-compose exec app ps aux | grep php-fpm
+docker compose exec app ps aux | grep php-fpm
 
 # Check nginx logs
-docker-compose logs nginx
+docker compose logs nginx
 
 # Restart app container
-docker-compose restart app
+docker compose restart app
 ```
 
 ### Clear All Caches
 ```bash
-docker-compose exec app php artisan optimize:clear
-docker-compose restart app
-docker-compose restart nginx
+docker compose exec app php artisan optimize:clear
+docker compose restart app
+docker compose restart nginx
 ```
 
 ## Invoice System in Docker
@@ -288,7 +288,7 @@ docker push your-registry.com/hoonian:latest
 ```bash
 # On production server
 docker pull your-registry.com/hoonian:latest
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker compose.prod.yml up -d
 ```
 
 ### 4. Production Checklist
@@ -317,25 +317,25 @@ docker-compose -f docker-compose.prod.yml up -d
 ### Check Container Health
 ```bash
 # View container status
-docker-compose ps
+docker compose ps
 
 # Check resource usage
 docker stats
 
 # View container processes
-docker-compose top
+docker compose top
 ```
 
 ### Logs
 ```bash
 # Follow all logs
-docker-compose logs -f
+docker compose logs -f
 
 # Follow specific service
-docker-compose logs -f app
+docker compose logs -f app
 
 # Last 100 lines
-docker-compose logs --tail=100 app
+docker compose logs --tail=100 app
 ```
 
 ## Backup & Restore
@@ -343,7 +343,7 @@ docker-compose logs --tail=100 app
 ### Backup Database
 ```bash
 # Create backup
-docker-compose exec db mysqldump -u root -p${DB_PASSWORD} hoonian > backup-$(date +%Y%m%d).sql
+docker compose exec db mysqldump -u root -p${DB_PASSWORD} hoonian > backup-$(date +%Y%m%d).sql
 
 # Compress backup
 gzip backup-$(date +%Y%m%d).sql
@@ -358,7 +358,7 @@ docker run --rm -v hoonian_storage-data:/data -v $(pwd):/backup alpine tar czf /
 ### Restore Database
 ```bash
 # Restore from backup
-docker-compose exec -T db mysql -u root -p${DB_PASSWORD} hoonian < backup-20251220.sql
+docker compose exec -T db mysql -u root -p${DB_PASSWORD} hoonian < backup-20251220.sql
 ```
 
 ## Security Best Practices

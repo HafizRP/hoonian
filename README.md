@@ -122,11 +122,11 @@ cp .env.example .env
 # REDIS_HOST=redis
 
 # Build and start
-docker-compose build
-docker-compose up -d
+docker compose build
+docker compose up -d
 
 # Run migrations
-docker-compose exec app php artisan migrate --force
+docker compose exec app php artisan migrate --force
 ```
 
 Access: http://localhost:8004

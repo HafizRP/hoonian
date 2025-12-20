@@ -99,32 +99,32 @@ Open browser: `http://your-server-ip:8004`
 ### Container Management
 ```bash
 # View logs
-sudo docker-compose logs -f app
-sudo docker-compose logs -f nginx
+sudo docker compose logs -f app
+sudo docker compose logs -f nginx
 
 # Restart containers
-sudo docker-compose restart
+sudo docker compose restart
 
 # Stop containers
-sudo docker-compose down
+sudo docker compose down
 
 # Start containers
-sudo docker-compose up -d
+sudo docker compose up -d
 ```
 
 ### Laravel Commands
 ```bash
 # Access container shell
-sudo docker-compose exec app bash
+sudo docker compose exec app bash
 
 # Clear cache
-sudo docker-compose exec app php artisan cache:clear
+sudo docker compose exec app php artisan cache:clear
 
 # Run migrations
-sudo docker-compose exec app php artisan migrate
+sudo docker compose exec app php artisan migrate
 
 # Optimize
-sudo docker-compose exec app php artisan optimize
+sudo docker compose exec app php artisan optimize
 ```
 
 ### Database Access
@@ -133,7 +133,7 @@ sudo docker-compose exec app php artisan optimize
 mysql -h 127.0.0.1 -P 3308 -u root -p hoonian
 
 # From inside container
-sudo docker-compose exec db mysql -u root -p hoonian
+sudo docker compose exec db mysql -u root -p hoonian
 ```
 
 ## Troubleshooting
@@ -145,35 +145,35 @@ APP_PORT=8005
 ```
 Then restart:
 ```bash
-sudo docker-compose down
-sudo docker-compose up -d
+sudo docker compose down
+sudo docker compose up -d
 ```
 
 ### Container Won't Start
 ```bash
 # Check logs
-sudo docker-compose logs app
-sudo docker-compose logs db
+sudo docker compose logs app
+sudo docker compose logs db
 
 # Rebuild
-sudo docker-compose down
-sudo docker-compose build --no-cache
-sudo docker-compose up -d
+sudo docker compose down
+sudo docker compose build --no-cache
+sudo docker compose up -d
 ```
 
 ### Permission Issues
 ```bash
-sudo docker-compose exec app chmod -R 775 storage bootstrap/cache
-sudo docker-compose exec app chown -R www-data:www-data storage bootstrap/cache
+sudo docker compose exec app chmod -R 775 storage bootstrap/cache
+sudo docker compose exec app chown -R www-data:www-data storage bootstrap/cache
 ```
 
 ### Database Connection Failed
 ```bash
 # Check if database is ready
-sudo docker-compose exec app php artisan db:show
+sudo docker compose exec app php artisan db:show
 
 # Check database logs
-sudo docker-compose logs db
+sudo docker compose logs db
 ```
 
 ## Current Containers on Server
@@ -205,10 +205,10 @@ sudo firewall-cmd --reload
 ### Database Backup
 ```bash
 # Create backup
-sudo docker-compose exec db mysqldump -u root -p hoonian > backup-$(date +%Y%m%d).sql
+sudo docker compose exec db mysqldump -u root -p hoonian > backup-$(date +%Y%m%d).sql
 
 # Restore backup
-sudo docker-compose exec -T db mysql -u root -p hoonian < backup-20251220.sql
+sudo docker compose exec -T db mysql -u root -p hoonian < backup-20251220.sql
 ```
 
 ### Full Backup
@@ -225,14 +225,14 @@ sudo docker run --rm -v hoonian_storage-data:/data -v $(pwd):/backup alpine tar 
 git pull origin main
 
 # Rebuild and restart
-sudo docker-compose build
-sudo docker-compose up -d
+sudo docker compose build
+sudo docker compose up -d
 
 # Run migrations
-sudo docker-compose exec app php artisan migrate --force
+sudo docker compose exec app php artisan migrate --force
 
 # Clear cache
-sudo docker-compose exec app php artisan optimize
+sudo docker compose exec app php artisan optimize
 ```
 
 ## Monitoring
@@ -245,7 +245,7 @@ sudo docker ps
 sudo docker stats
 
 # Container logs
-sudo docker-compose logs -f
+sudo docker compose logs -f
 ```
 
 ---
