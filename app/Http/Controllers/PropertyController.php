@@ -277,9 +277,15 @@ class PropertyController extends Controller
         // Base query
         $query = Property::with(['owner']);
 
-        // If the logged‑in user is an agent (role = 2), only show their own properties
+        // If the logged‑in user is an agent (role = 2), show their properties AND their clients' properties
         if (auth()->check() && auth()->user()->role == 2) {
-            $query->where('owner_id', auth()->id());
+            $agentId = auth()->id();
+            $query->where(function ($q) use ($agentId) {
+                $q->where('owner_id', $agentId)
+                    ->orWhereHas('owner', function ($uq) use ($agentId) {
+                        $uq->where('agent_id', $agentId);
+                    });
+            });
         }
 
         // Apply filters
@@ -315,8 +321,20 @@ class PropertyController extends Controller
             'featured_count' => $properties->where('featured', true)->count(),
         ];
 
-        // Get all owners and types for filter dropdowns
-        $owners = User::whereIn('role', [1, 2])->get(); // Admin and Agents
+        // Get owners for filter dropdown
+        if (auth()->check() && auth()->user()->role == 2) {
+            // Agent sees themselves and their clients
+            $owners = User::where('id', auth()->id())
+                ->orWhere('agent_id', auth()->id())
+                ->get();
+        } else {
+            // Admin sees Admins and Agents (and maybe should see everyone? stick to original logic + all for now or just useful roles)
+            // Original was: User::whereIn('role', [1, 2])->get();
+            // Better to show all potential owners (excluding regular users if they don't own, but if they do.. let's just get users who 'can' be owners or are owners)
+            // For now, let's keep it close to original but maybe safe to just show all relevant users.
+            $owners = User::whereIn('role', [1, 2])->get();
+        }
+
         $types = PropertyType::all();
 
         return view('admin.property.index', compact('properties', 'stats', 'owners', 'types'));

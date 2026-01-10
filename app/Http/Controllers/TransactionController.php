@@ -18,32 +18,32 @@ class TransactionController extends Controller
         $properties = Property::where('owner_id', $userId)->get();
 
         // Selling (Incoming Bids) - Orang lain nawar properti kita
-    $sellingQuery = Transaction::with(['property', 'user'])
-        ->whereHas('property', function ($query) use ($userId) {
-            $query->where('owner_id', $userId);
-        });
+        $sellingQuery = Transaction::with(['property', 'user'])
+            ->whereHas('property', function ($query) use ($userId) {
+                $query->where('owner_id', $userId);
+            });
 
-    // Buying (Outbound Bids) - Kita nawar properti orang
-    $buyingQuery = Transaction::with(['property.owner']) // Eager load owner
-        ->where('user_id', $userId);
+        // Buying (Outbound Bids) - Kita nawar properti orang
+        $buyingQuery = Transaction::with(['property.owner']) // Eager load owner
+            ->where('user_id', $userId);
 
-    // Apply Filters to BOTH queries
-    // Filter by Property
-    if ($request->has('property_id') && $request->property_id != '') {
-        $sellingQuery->where('property_id', $request->property_id);
-        $buyingQuery->where('property_id', $request->property_id);
-    }
+        // Apply Filters to BOTH queries
+        // Filter by Property
+        if ($request->has('property_id') && $request->property_id != '') {
+            $sellingQuery->where('property_id', $request->property_id);
+            $buyingQuery->where('property_id', $request->property_id);
+        }
 
-    // Filter by Status
-    if ($request->has('status') && $request->status != '') {
-        $sellingQuery->where('status', $request->status);
-        $buyingQuery->where('status', $request->status);
-    }
+        // Filter by Status
+        if ($request->has('status') && $request->status != '') {
+            $sellingQuery->where('status', $request->status);
+            $buyingQuery->where('status', $request->status);
+        }
 
-    $sellingBids = $sellingQuery->orderBy('created_at', 'desc')->get();
-    $buyingBids = $buyingQuery->orderBy('created_at', 'desc')->get();
+        $sellingBids = $sellingQuery->orderBy('created_at', 'desc')->get();
+        $buyingBids = $buyingQuery->orderBy('created_at', 'desc')->get();
 
-    return view('transaction.list', compact('sellingBids', 'buyingBids', 'properties'));
+        return view('transaction.list', compact('sellingBids', 'buyingBids', 'properties'));
     }
 
     public function createBidding(Request $request)
@@ -55,10 +55,10 @@ class TransactionController extends Controller
 
         $property = Property::findOrFail($request->property_id);
 
-    // Prevent owner from bidding on their own property
-    if ($property->owner_id == auth()->id()) {
-        return back()->with('error', 'You cannot bid on your own property!');
-    }
+        // Prevent owner from bidding on their own property
+        if ($property->owner_id == auth()->id()) {
+            return back()->with('error', 'You cannot bid on your own property!');
+        }
 
         // // Contoh logika: Bid otomatis naik $1,000 dari harga tertinggi saat ini
         // $increment = 1000;
@@ -125,9 +125,23 @@ class TransactionController extends Controller
         return back()->with('info', 'Bid telah ditolak.');
     }
 
-    public function backofficeList(Request $request) {
+    public function backofficeList(Request $request)
+    {
+        $user = Auth::user();
+
         // Base query
         $query = Transaction::with(['property', 'user']);
+
+        // Filter by Agent (Role 2)
+        if ($user->role == 2) {
+            $agentId = $user->id;
+            $query->whereHas('property', function ($q) use ($agentId) {
+                $q->where('owner_id', $agentId)
+                    ->orWhereHas('owner', function ($uq) use ($agentId) {
+                        $uq->where('agent_id', $agentId);
+                    });
+            });
+        }
 
         // Apply filters
         if ($request->filled('date_from')) {
@@ -158,8 +172,16 @@ class TransactionController extends Controller
             'failed_count' => $transactions->where('status', 'outbid')->count(),
         ];
 
-        // Get all properties for filter dropdown
-        $properties = Property::all();
+        // Get properties for filter dropdown
+        if ($user->role == 2) {
+            $agentId = $user->id;
+            $properties = Property::where('owner_id', $agentId)
+                ->orWhereHas('owner', function ($uq) use ($agentId) {
+                    $uq->where('agent_id', $agentId);
+                })->get();
+        } else {
+            $properties = Property::all();
+        }
 
         return view('admin.transaction.index', compact('transactions', 'properties', 'stats'));
     }

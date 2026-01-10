@@ -50,7 +50,18 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function roleData() {
+    public function roleData()
+    {
         return $this->belongsTo(Roles::class, 'role');
+    }
+
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
+    }
+
+    public function clients()
+    {
+        return $this->hasMany(User::class, 'agent_id');
     }
 }

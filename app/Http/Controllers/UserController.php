@@ -21,6 +21,11 @@ class UserController extends Controller
         // Base query
         $query = User::with('roleData');
 
+        // Filter by Agent: Only show users connected to this agent
+        if (Auth::user()->role == 2) {
+            $query->where('agent_id', Auth::user()->id);
+        }
+
         // Apply filters
         if ($request->filled('role')) {
             $query->where('role', $request->role);
@@ -28,9 +33,9 @@ class UserController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', '%' . $search . '%')
-                  ->orWhere('email', 'LIKE', '%' . $search . '%');
+                    ->orWhere('email', 'LIKE', '%' . $search . '%');
             });
         }
 
@@ -68,13 +73,20 @@ class UserController extends Controller
             'role' => 'required'
         ]);
 
-        User::create([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
-            'profile_img' => null // Optional: add default or handle upload
-        ]);
+            'profile_img' => null
+        ];
+
+        // If creator is Agent, assign new user to them
+        if (Auth::user()->role == 2) {
+            $data['agent_id'] = Auth::user()->id;
+        }
+
+        User::create($data);
 
         return redirect()->back()->with('success', 'User created successfully.');
     }
@@ -311,32 +323,68 @@ class UserController extends Controller
 
     public function adminDashboard()
     {
+        $user = Auth::user();
+
+        // Base queries
+        $usersQuery = User::query();
+        $propertiesQuery = Property::query();
+        $transactionsQuery = Transaction::query();
+
+        // Filter for Agent (Role 2)
+        if ($user->role == 2) {
+            // Users: Only clients assigned to this agent
+            $usersQuery->where('agent_id', $user->id);
+
+            // Properties: Owned by Agent OR Owned by Agent's Clients
+            $propertiesQuery->where(function ($q) use ($user) {
+                $q->where('owner_id', $user->id)
+                    ->orWhereHas('owner', function ($wq) use ($user) {
+                        $wq->where('agent_id', $user->id);
+                    });
+            });
+
+            // Transactions: Linked to those properties
+            $transactionsQuery->whereHas('property', function ($q) use ($user) {
+                $q->where('owner_id', $user->id)
+                    ->orWhereHas('owner', function ($wq) use ($user) {
+                        $wq->where('agent_id', $user->id);
+                    });
+            });
+        }
+
         // 1. User Statistics
-        $totalUsers = User::count();
-        $adminCount = User::where('role', 1)->count();
-        $agentCount = User::where('role', 2)->count();
-        $userCount = User::where('role', 3)->count();
+        $totalUsers = (clone $usersQuery)->count();
+
+        if ($user->role == 2) {
+            $adminCount = 0;
+            $agentCount = 1;
+            $userCount = $totalUsers;
+        } else {
+            $adminCount = User::where('role', 1)->count();
+            $agentCount = User::where('role', 2)->count();
+            $userCount = User::where('role', 3)->count();
+        }
 
         // 2. Property Statistics
-        $totalProperties = Property::count();
-        $availableProperties = Property::where('status', '1')->count();
-        $soldProperties = Property::where('status', '0')->count();
-        $totalPropertyValue = Property::sum('price');
+        $totalProperties = (clone $propertiesQuery)->count();
+        $availableProperties = (clone $propertiesQuery)->where('status', '1')->count();
+        $soldProperties = (clone $propertiesQuery)->where('status', '0')->count();
+        $totalPropertyValue = (clone $propertiesQuery)->sum('price');
 
         // 3. Transaction Statistics
-        $totalTransactions = Transaction::count();
-        $acceptedTransactions = Transaction::where('status', 'accepted')->count();
-        $leadingTransactions = Transaction::where('status', 'leading')->count();
-        $totalRevenue = Transaction::where('status', 'accepted')->sum('amount');
+        $totalTransactions = (clone $transactionsQuery)->count();
+        $acceptedTransactions = (clone $transactionsQuery)->where('status', 'accepted')->count();
+        $leadingTransactions = (clone $transactionsQuery)->where('status', 'leading')->count();
+        $totalRevenue = (clone $transactionsQuery)->where('status', 'accepted')->sum('amount');
 
         // 4. Latest Properties (Top 3)
-        $latestProperties = Property::latest()->take(3)->get();
+        $latestProperties = (clone $propertiesQuery)->latest()->take(3)->get();
 
         // 5. New Customers (Latest 5 Users)
-        $newCustomers = User::where('role', 3)->latest()->take(5)->get();
+        $newCustomers = (clone $usersQuery)->where('role', 3)->latest()->take(5)->get();
 
         // 6. Recent Transactions (Top 5)
-        $recentTransactions = Transaction::with(['user', 'property'])->latest()->take(5)->get();
+        $recentTransactions = (clone $transactionsQuery)->with(['user', 'property'])->latest()->take(5)->get();
 
         return view('admin.index', compact(
             'totalUsers',
