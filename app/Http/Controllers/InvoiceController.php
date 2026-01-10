@@ -128,4 +128,106 @@ class InvoiceController extends Controller
             return back()->with('error', 'Failed to cancel invoice: ' . $e->getMessage());
         }
     }
+    /**
+     * Download invoice for client (buyer/seller)
+     */
+    public function download($transactionId)
+    {
+        $transaction = Transaction::with(['property', 'user', 'property.owner'])->findOrFail($transactionId);
+        $user = auth()->user();
+
+        // Authorization: Only Buyer (user_id) or Seller (property owner_id) can view
+        if ($transaction->user_id !== $user->id && $transaction->property->owner_id !== $user->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Check if invoice exists
+        if (!$transaction->hasInvoice()) {
+            return back()->with('error', 'Invoice has not been generated yet. Please contact admin.');
+        }
+
+        // Generate PDF
+        $pdf = Pdf::loadView('admin.invoice.pdf', [ // Reusing the admin view for uniformity
+            'transaction' => $transaction
+        ]);
+
+        return $pdf->download('invoice-' . $transaction->invoice_number . '.pdf');
+    }
+
+    /**
+     * Mark invoice as paid by Property Owner
+     */
+    public function ownerMarkPaid(Request $request, $id)
+    {
+        $transaction = Transaction::with('property')->findOrFail($id);
+        $user = auth()->user();
+
+        // Authorization: Only Seller (property owner_id) can mark as paid
+        if ($transaction->property->owner_id !== $user->id) {
+            abort(403, 'Unauthorized action. Only the property owner can mark this as paid.');
+        }
+
+        if (!$transaction->hasInvoice()) {
+            return back()->with('error', 'Invoice not found. Cannot mark as paid.');
+        }
+
+        if ($transaction->isPaid()) {
+            return back()->with('info', 'Invoice is already marked as paid.');
+        }
+
+        $request->validate([
+            'payment_method' => 'required|string|max:255',
+        ]);
+
+        $transaction->update([
+            'payment_method' => $request->payment_method,
+            'paid_at' => now(),
+        ]);
+
+        return back()->with('success', 'Payment confirmed! Transaction marked as paid.');
+    }
+
+
+
+    public function ownerGenerate($id)
+    {
+        $transaction = Transaction::with(['property', 'property.owner'])->findOrFail($id);
+        $user = auth()->user();
+
+        // Authorization: Only Seller (property owner_id) can generate
+        if ($transaction->property->owner_id !== $user->id) {
+            abort(403, 'Unauthorized action. Only the property owner can generate invoice.');
+        }
+
+        // Logic Generate Invoice (Without Download)
+        DB::beginTransaction();
+        try {
+            if (!$transaction->hasInvoice()) {
+                $invoiceNumber = Transaction::generateInvoiceNumber();
+
+                $taxRate = 10;
+                $subtotal = $transaction->amount;
+                $taxAmount = $subtotal * ($taxRate / 100);
+                $totalAmount = $subtotal + $taxAmount;
+                $dueDate = now()->addDays(30);
+
+                $transaction->update([
+                    'invoice_number' => $invoiceNumber,
+                    'tax_rate' => $taxRate,
+                    'tax_amount' => $taxAmount,
+                    'total_amount' => $totalAmount,
+                    'due_date' => $dueDate,
+                ]);
+            }
+
+            DB::commit();
+
+            // Redirect back to update UI
+            return back()->with('success', 'Invoice generated successfully! You can now mark it as paid.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to generate invoice: ' . $e->getMessage());
+        }
+    }
 }

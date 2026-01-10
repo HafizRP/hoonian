@@ -51,6 +51,14 @@ Route::middleware('auth')->group(function () {
 
     // Resource properties untuk auth user (create, edit, update, delete)
     Route::resource('properties', PropertyController::class)->except(['index', 'show']);
+
+    // Invoice Download for Clients
+    // Invoice Download for Clients
+    Route::get('/invoices/{transaction}/download', [InvoiceController::class, 'download'])->name('invoices.download');
+    // Invoice Mark as Paid for Owners
+    Route::post('/invoices/{id}/owner-mark-paid', [InvoiceController::class, 'ownerMarkPaid'])->name('invoices.ownerMarkPaid');
+    // Invoice Generate for Owners
+    Route::get('/invoices/{id}/owner-generate', [InvoiceController::class, 'ownerGenerate'])->name('invoices.ownerGenerate');
 });
 
 /*
@@ -80,4 +88,7 @@ Route::middleware(['auth']) // Removed admin middleware
             Route::post('/{id}/mark-paid', [InvoiceController::class, 'markAsPaid'])->name('markPaid');
             Route::delete('/{id}/cancel', [InvoiceController::class, 'cancel'])->name('cancel');
         });
+
+        // Health Check
+        Route::get('/health', [App\Http\Controllers\HealthCheckController::class, 'index'])->name('health');
     });

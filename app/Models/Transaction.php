@@ -46,19 +46,22 @@ class Transaction extends Model
     {
         $prefix = 'INV';
         $date = now()->format('Ymd');
-        $lastInvoice = self::whereDate('created_at', today())
-            ->whereNotNull('invoice_number')
-            ->latest()
+        $invoicePrefix = $prefix . '-' . $date . '-';
+
+        // Cari invoice number terakhir yang berawalan prefix hari ini
+        $lastInvoice = self::where('invoice_number', 'like', $invoicePrefix . '%')
+            ->orderBy('invoice_number', 'desc')
             ->first();
 
         if ($lastInvoice) {
+            // Ambil 4 digit terakhir
             $lastNumber = intval(substr($lastInvoice->invoice_number, -4));
             $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '0001';
         }
 
-        return $prefix . '-' . $date . '-' . $newNumber;
+        return $invoicePrefix . $newNumber;
     }
 
     public function hasInvoice()

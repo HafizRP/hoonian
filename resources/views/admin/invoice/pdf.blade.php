@@ -265,7 +265,8 @@
                     @elseif($transaction->isOverdue())
                         <span class="status-badge status-overdue">OVERDUE</span>
                     @else
-                        <span class="status-badge status-pending">PENDING</span>
+                        <span class="status-badge status-pending"
+                            style="background-color: #6c757d; color: white;">UNPAID</span>
                     @endif
                 </td>
             </tr>

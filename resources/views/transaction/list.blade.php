@@ -184,7 +184,60 @@
                                                     </form>
                                                 </div>
                                             @else
-                                                <span class="text-muted small"><i class="fas fa-check-double me-1"></i> Completed</span>
+                                                @if ($bid->invoice_number && !$bid->isPaid())
+                                                    <button type="button" class="btn btn-outline-success btn-sm border-2 rounded-pill fw-bold" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#markPaidModal{{ $bid->id }}">
+                                                        <i class="fas fa-check-circle me-1"></i> Mark Paid
+                                                    </button>
+
+                                                    <!-- Modal Mark Paid -->
+                                                    <div class="modal fade" id="markPaidModal{{ $bid->id }}" tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header border-0 pb-0">
+                                                                    <h5 class="modal-title fw-bold">Confirm Payment</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <form action="{{ route('invoices.ownerMarkPaid', $bid->id) }}" method="POST">
+                                                                    @csrf
+                                                                    <div class="modal-body text-start">
+                                                                        <p class="text-muted small mb-3">
+                                                                            Please confirm that you have received the payment for invoice <strong>{{ $bid->invoice_number }}</strong>.
+                                                                        </p>
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label small fw-bold text-uppercase text-muted">Amount Received</label>
+                                                                            <div class="form-control-plaintext fw-bold fs-5">Rp {{ number_format($bid->total_amount, 0, ',', '.') }}</div>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <label for="payment_method" class="form-label small fw-bold">Payment Method</label>
+                                                                            <select name="payment_method" class="form-select" required>
+                                                                                <option value="">Select Method...</option>
+                                                                                <option value="Bank Transfer">Bank Transfer (BCA)</option>
+                                                                                <option value="Cash">Cash</option>
+                                                                                <option value="Other">Other</option>
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="modal-footer border-0 pt-0">
+                                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" class="btn btn-success fw-bold"><i class="fas fa-check me-2"></i>Confirm Payment</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @elseif ($bid->invoice_number && $bid->isPaid())
+                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill px-3">
+                                                        <i class="fas fa-check-double me-1"></i> Paid
+                                                    </span>
+                                                @elseif ($bid->status == 'accepted')
+                                                    <a href="{{ route('invoices.ownerGenerate', $bid->id) }}" class="btn btn-primary btn-sm rounded-pill fw-bold">
+                                                        <i class="fas fa-file-invoice-dollar me-1"></i> Generate Invoice
+                                                    </a>
+                                                @else
+                                                     <span class="text-muted small">-</span>
+                                                @endif
                                             @endif
                                         </td>
                                     </tr>
@@ -213,6 +266,7 @@
                                     <th scope="col">Bid Amount</th>
                                     <th scope="col" class="text-center">Status</th>
                                     <th scope="col" class="text-center">Date</th>
+                                    <th scope="col" class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -243,12 +297,24 @@
                                                 <span class="badge bg-warning text-dark"><i class="fas fa-exclamation-triangle me-1"></i> Outbid</span>
                                             @elseif($bid->status == 'accepted')
                                                 <span class="badge bg-primary"><i class="fas fa-check-circle me-1"></i> Accepted</span>
+                                                @if($bid->invoice_number)
+                                                    <div class="mt-1 small text-muted">{{ $bid->invoice_number }}</div>
+                                                @endif
                                             @else
                                                 <span class="badge bg-secondary">{{ ucfirst($bid->status) }}</span>
                                             @endif
                                         </td>
                                         <td class="text-center text-muted">
                                             <i class="fas fa-calendar-alt me-1"></i> {{ $bid->created_at->format('d M Y') }}
+                                        </td>
+                                        <td class="text-center">
+                                            @if ($bid->status == 'accepted' && $bid->invoice_number)
+                                                <a href="{{ route('invoices.download', $bid->id) }}" class="btn btn-primary btn-sm rounded-pill" target="_blank">
+                                                    <i class="fas fa-file-invoice me-1"></i> Invoice
+                                                </a>
+                                            @else
+                                                <span class="text-black-50 small">-</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

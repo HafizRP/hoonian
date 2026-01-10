@@ -96,6 +96,13 @@
                                 <p>Transactions</p>
                             </a>
                         </li>
+
+                        <li class="nav-item {{ Route::is('backoffice.health') ? 'active' : '' }}">
+                            <a href="{{ route('backoffice.health') }}">
+                                <i class="fas fa-heartbeat"></i>
+                                <p>System Health</p>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
